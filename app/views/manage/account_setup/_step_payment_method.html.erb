@@ -1,15 +1,10 @@
+<!-- app/views/manage/account_setup/_step_payment_method.html.erb -->
 <div class="text-center mb-8">
-  <h2 class="text-3xl font-bold text-gray-900 mb-2">Payment Method</h2>
-  <p class="text-lg text-gray-600">Choose how you'd like to pay for your package</p>
+  <h2 class="text-3xl font-bold text-gray-900 mb-2">Complete Your Payment</h2>
+  <p class="text-lg text-gray-600">Secure payment to finish your account setup</p>
 </div>
 
 <div class="space-y-6">
-  <% if @account_setup.errors[:payment_method].any? %>
-    <div class="text-red-600 text-sm mb-4">
-      <%= @account_setup.errors[:payment_method].first %>
-    </div>
-  <% end %>
-
   <!-- Order Summary -->
   <div class="bg-gray-50 rounded-lg p-6 mb-6">
     <h3 class="text-lg font-semibold text-gray-900 mb-4">Order Summary</h3>
@@ -26,31 +21,120 @@
         <span class="text-gray-600">Support:</span>
         <span class="font-medium"><%= @account_setup.support_option || 'Not selected' %></span>
       </div>
-      <hr class="my-3">
-      <div class="flex justify-between text-lg font-semibold">
-        <span>Total:</span>
-        <span>£<%= @account_setup.package_price %></span>
-      </div>
+
+      <% if @account_setup.support_option.present? %>
+        <hr class="my-3">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Package Price:</span>
+          <span class="font-medium">£<%= @account_setup.base_package_price %></span>
+        </div>
+
+        <% if @account_setup.is_deposit_payment? %>
+          <div class="flex justify-between text-blue-600">
+            <span>Deposit (20%):</span>
+            <span class="font-medium">£<%= @account_setup.package_price %></span>
+          </div>
+          <div class="flex justify-between text-sm text-gray-500">
+            <span>Remaining Balance:</span>
+            <span>£<%= @account_setup.remaining_balance %></span>
+          </div>
+          <hr class="my-2">
+          <div class="flex justify-between text-lg font-semibold">
+            <span>Pay Now:</span>
+            <span>£<%= @account_setup.package_price %></span>
+          </div>
+
+          <!-- Deposit explanation -->
+          <div class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                </svg>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-blue-700">
+                  <strong>Deposit Payment:</strong> You're paying a 20% deposit now. The remaining £<%= @account_setup.remaining_balance %> will be due after we complete your setup.
+                </p>
+              </div>
+            </div>
+          </div>
+        <% else %>
+          <hr class="my-2">
+          <div class="flex justify-between text-lg font-semibold">
+            <span>Total:</span>
+            <span>£<%= @account_setup.package_price %></span>
+          </div>
+
+          <!-- Full payment explanation -->
+          <div class="mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-green-700">
+                  <strong>Full Payment:</strong> You're paying the complete package price upfront since you'll be managing the setup yourself.
+                </p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <hr class="my-3">
+        <div class="flex justify-between text-lg font-semibold">
+          <span>Total:</span>
+          <span>£<%= @account_setup.package_price %></span>
+        </div>
+      <% end %>
     </div>
   </div>
 
-  <!-- Payment Method Selection -->
-  <div class="space-y-4">
-    <label class="relative block cursor-pointer">
-      <%= form.radio_button :payment_method, "stripe",
-                            name: "account_setup[payment_method]",
-                            class: "sr-only peer",
-                            checked: @account_setup.payment_method == "stripe" %>
-      <div class="border-2 border-gray-200 rounded-lg p-6 hover:border-blue-300 peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg class="h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-            </svg>
-          </div>
+  <!-- Hidden field for payment method -->
+  <%= form.hidden_field :payment_method, value: "stripe", name: "account_setup[payment_method]" %>
+
+  <!-- Stripe Payment Form -->
+  <div id="stripe-payment-container">
+    <div class="border rounded-lg p-6 bg-white">
+      <div class="flex items-center mb-4">
+        <svg class="h-8 w-8 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+        </svg>
+        <div>
+          <h4 class="text-lg font-medium">Payment Details</h4>
+          <p class="text-sm text-gray-600">Secure payment powered by Stripe</p>
+        </div>
+        <div class="ml-auto flex space-x-1">
+          <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Visa</span>
+          <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Mastercard</span>
+          <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Amex</span>
         </div>
       </div>
-    </label>
+
+      <!-- Stripe Elements will be mounted here -->
+      <div id="stripe-payment-element" class="mb-4">
+        <!-- Payment form elements go here -->
+      </div>
+
+      <div id="stripe-error-message" class="text-red-600 text-sm mb-4 hidden"></div>
+
+      <!-- Terms and Conditions -->
+      <div class="mb-4">
+        <label class="flex items-start">
+          <input type="checkbox" id="terms-checkbox" class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" required>
+          <span class="ml-2 text-sm text-gray-600">
+            I agree to the <a href="#" class="text-blue-600 hover:text-blue-500">Terms of Service</a> and <a href="#" class="text-blue-600 hover:text-blue-500">Privacy Policy</a>
+          </span>
+        </label>
+      </div>
+
+      <button type="button" id="stripe-submit-button" class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors font-medium">
+        <span id="stripe-button-text">Complete Payment - £<%= @account_setup.package_price %></span>
+        <div id="stripe-spinner" class="hidden inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin ml-2"></div>
+      </button>
+    </div>
   </div>
 
   <!-- Security Notice -->
@@ -63,19 +147,153 @@
       </div>
       <div class="ml-3">
         <p class="text-sm text-green-700">
-          <strong>Secure Payment:</strong> Your payment information is encrypted and processed securely through Stripe. We never store your card details on our servers.
+          <strong>🔒 Secure Payment:</strong> Your payment information is encrypted and processed securely through Stripe. We never store your card details on our servers.
         </p>
       </div>
     </div>
   </div>
-
-  <!-- Terms and Conditions -->
-  <div class="border-t border-gray-200 pt-6">
-    <label class="flex items-start">
-      <input type="checkbox" class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" required>
-      <span class="ml-2 text-sm text-gray-600">
-        I agree to the <a href="#" class="text-blue-600 hover:text-blue-500">Terms of Service</a> and <a href="#" class="text-blue-600 hover:text-blue-500">Privacy Policy</a>
-      </span>
-    </label>
-  </div>
 </div>
+
+<!-- Stripe JavaScript -->
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const stripe = Stripe('<%= Rails.application.config.stripe[:publishable_key] %>');
+        let elements, paymentElement, clientSecret;
+
+        // Initialize Stripe immediately when page loads
+        initializeStripe();
+
+        async function initializeStripe() {
+            try {
+                // Create PaymentIntent on the server
+                const response = await fetch('/manage/payments/create-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.error) {
+                    showError(result.error);
+                    return;
+                }
+
+                clientSecret = result.client_secret;
+
+                // Initialize Stripe Elements
+                elements = stripe.elements({ clientSecret });
+                paymentElement = elements.create('payment');
+                paymentElement.mount('#stripe-payment-element');
+
+            } catch (error) {
+                showError('Failed to initialize payment: ' + error.message);
+            }
+        }
+
+        // Handle payment submission
+        document.getElementById('stripe-submit-button')?.addEventListener('click', async function(e) {
+            e.preventDefault();
+
+            if (!elements || !clientSecret) {
+                showError('Payment not initialized');
+                return;
+            }
+
+            const termsCheckbox = document.getElementById('terms-checkbox');
+            if (!termsCheckbox.checked) {
+                showError('Please accept the terms and conditions');
+                return;
+            }
+
+            setLoading(true);
+
+            const { error, paymentIntent } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: window.location.origin + '/manage/dashboard'
+                },
+                redirect: 'if_required'
+            });
+
+            if (error) {
+                showError(error.message);
+                setLoading(false);
+            } else if (paymentIntent.status === 'succeeded') {
+                // Payment successful, confirm on server
+                try {
+                    const response = await fetch('/manage/payments/confirm', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({ payment_intent_id: paymentIntent.id })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // Show success message and redirect
+                        showSuccess('Payment successful! Redirecting...');
+                        setTimeout(() => {
+                            window.location.href = result.redirect_url || '/manage/dashboard';
+                        }, 2000);
+                    } else {
+                        showError(result.error || 'Payment confirmation failed');
+                        setLoading(false);
+                    }
+                } catch (error) {
+                    showError('Payment confirmation failed: ' + error.message);
+                    setLoading(false);
+                }
+            }
+        });
+
+        function showError(message) {
+            const errorElement = document.getElementById('stripe-error-message');
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+
+            // Hide success message if shown
+            const successElement = document.getElementById('stripe-success-message');
+            if (successElement) successElement.classList.add('hidden');
+        }
+
+        function showSuccess(message) {
+            // Create success message if it doesn't exist
+            let successElement = document.getElementById('stripe-success-message');
+            if (!successElement) {
+                successElement = document.createElement('div');
+                successElement.id = 'stripe-success-message';
+                successElement.className = 'text-green-600 text-sm mb-4';
+                document.getElementById('stripe-error-message').parentNode.insertBefore(successElement, document.getElementById('stripe-error-message'));
+            }
+
+            successElement.textContent = message;
+            successElement.classList.remove('hidden');
+
+            // Hide error message
+            document.getElementById('stripe-error-message').classList.add('hidden');
+        }
+
+        function setLoading(isLoading) {
+            const button = document.getElementById('stripe-submit-button');
+            const buttonText = document.getElementById('stripe-button-text');
+            const spinner = document.getElementById('stripe-spinner');
+
+            if (isLoading) {
+                button.disabled = true;
+                buttonText.textContent = 'Processing Payment...';
+                spinner.classList.remove('hidden');
+            } else {
+                button.disabled = false;
+                buttonText.textContent = 'Complete Payment - £<%= @account_setup.package_price %>';
+                spinner.classList.add('hidden');
+            }
+        }
+    });
+</script>

@@ -15,6 +15,16 @@ Rails.application.routes.draw do
     patch "/account-setup", to: 'account_setup#update'
     get "/account-setup/:step", to: 'account_setup#show'
     patch "/account-setup/:step", to: 'account_setup#update'
+
+    post 'payments/create-intent', to: 'payments#create_payment_intent'
+    post 'payments/confirm', to: 'payments#confirm_payment'
+
+    get "/website", to: 'dashboard#website', as: 'website'
+    get "/website/create", to: 'dashboard#website_create', as: 'website_create'
+    post "/website/create/save", to: 'dashboard#website_create_save', as: 'website_create_save'
+
+    get "/website/settings", to: 'dashboard#website_settings', as: 'website_settings'
+
   end
 
   namespace :admin do

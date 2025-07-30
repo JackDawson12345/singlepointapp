@@ -17,12 +17,14 @@
                         name: "account_setup[domain_name]",
                         value: @account_setup.domain_name,
                         placeholder: "example.com",
-                        class: "block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-lg" %>
+                        class: "block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-lg #{'border-red-300 focus:border-red-500 focus:ring-red-500' if @account_setup.errors[:domain_name].any?}" %>
   </div>
 
   <% if @account_setup.errors[:domain_name].any? %>
     <div class="text-red-600 text-sm mt-1">
-      <%= @account_setup.errors[:domain_name].first %>
+      <% @account_setup.errors[:domain_name].each do |error| %>
+        <p><%= error %></p>
+      <% end %>
     </div>
   <% end %>
 
@@ -35,8 +37,14 @@
       </div>
       <div class="ml-3">
         <p class="text-sm text-blue-700">
-          Don't have a domain yet? No problem! You can purchase one during the setup process or we can help you find the perfect domain for your business.
+          <strong>Domain Requirements:</strong>
         </p>
+        <ul class="text-sm text-blue-700 mt-1 space-y-1">
+          <li>• Enter just the domain name (e.g., "example.com")</li>
+          <li>• Each domain can only be used once</li>
+          <li>• Don't include "http://" or "www"</li>
+          <li>• We'll help you purchase it if you don't have one yet</li>
+        </ul>
       </div>
     </div>
   </div>

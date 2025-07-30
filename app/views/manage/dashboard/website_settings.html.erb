@@ -1,0 +1,196 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <div class="bg-white shadow-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center">
+          <h1 class="text-xl font-semibold text-gray-900">Website Settings</h1>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <%= link_to "Back to Editor", manage_website_path,
+                      class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+          <%= link_to "Preview", manage_website_path,
+                      target: "_blank",
+                      class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="space-y-6">
+      <!-- Website Information -->
+      <div class="bg-white shadow sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium leading-6 text-gray-900">Website Information</h3>
+          <div class="mt-2 max-w-xl text-sm text-gray-500">
+            <p>Update your website's basic information and settings.</p>
+          </div>
+
+          <%= form_with model: @website, url: manage_website_path, method: :patch, local: true, html: { class: "mt-5 space-y-6" } do |f| %>
+            <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+              <div class="sm:col-span-4">
+                <%= f.label :name, "Website Name", class: "block text-sm font-medium text-gray-700" %>
+                <div class="mt-1">
+                  <%= f.text_field :name,
+                                   class: "shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md",
+                                   placeholder: "My Awesome Website" %>
+                </div>
+                <p class="mt-2 text-sm text-gray-500">This is how your website will be identified in your dashboard.</p>
+              </div>
+
+            </div>
+
+            <div class="flex justify-end">
+              <%= f.submit "Save Changes",
+                           class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Website Status -->
+      <div class="bg-white shadow sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium leading-6 text-gray-900">Website Status</h3>
+          <div class="mt-2 max-w-xl text-sm text-gray-500">
+            <p>Control whether your website is visible to the public.</p>
+          </div>
+
+          <div class="mt-5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <% if @website.published? %>
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                      <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                  <% else %>
+                    <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                      <svg class="w-5 h-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                  <% end %>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900">
+                    <%= @website.published? ? 'Published' : 'Draft' %>
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    <%= @website.published? ? 'Your website is live and visible to everyone' : 'Your website is in draft mode and not publicly visible' %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex space-x-3">
+                <% if @website.published? %>
+                  <%= link_to "Unpublish", manage_website_path,
+                              method: :patch,
+                              confirm: "Are you sure you want to take your website offline?",
+                              class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+                <% else %>
+                  <%= link_to "Publish", manage_website_path,
+                              method: :patch,
+                              class: "inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700" %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Website Information Display -->
+      <div class="bg-white shadow sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium leading-6 text-gray-900">Website Details</h3>
+          <div class="mt-5 border-t border-gray-200">
+            <dl class="divide-y divide-gray-200">
+              <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt class="text-sm font-medium text-gray-500">Website Name</dt>
+                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= @website.name %></dd>
+              </div>
+              <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt class="text-sm font-medium text-gray-500">Website URL</dt>
+                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  <% if @website.published? %>
+                    <a href="https://<%= @domain_name %>" target="_blank" class="text-blue-600 hover:text-blue-500">
+                      https://<%= @domain_name %>
+                    </a>
+                  <% else %>
+                    <span class="text-gray-500">https://<%= @domain_name %> (not live)</span>
+                  <% end %>
+                </dd>
+              </div>
+              <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt class="text-sm font-medium text-gray-500">Theme</dt>
+                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= @website.theme.name %></dd>
+              </div>
+              <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt class="text-sm font-medium text-gray-500">Pages</dt>
+                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  <%= @website.theme.theme_pages.count %> pages
+                  <span class="text-gray-500">
+                    (<%= @website.theme.theme_pages.pluck(:page_type).join(', ').humanize %>)
+                  </span>
+                </dd>
+              </div>
+              <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt class="text-sm font-medium text-gray-500">Created</dt>
+                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  <%= @website.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+                </dd>
+              </div>
+              <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt class="text-sm font-medium text-gray-500">Last Updated</dt>
+                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  <%= time_ago_in_words(@website.updated_at) %> ago
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <!-- Theme Information -->
+      <div class="bg-white shadow sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium leading-6 text-gray-900">Theme Information</h3>
+          <div class="mt-2 max-w-xl text-sm text-gray-500">
+            <p>Information about your current theme.</p>
+          </div>
+
+          <div class="mt-5">
+            <div class="flex items-start space-x-4">
+              <% if @website.theme.placeholder_image %>
+                <%= image_tag @website.theme.placeholder_image,
+                              class: "w-20 h-20 object-cover rounded-lg" %>
+              <% else %>
+                <div class="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+                  <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                </div>
+              <% end %>
+
+              <div class="flex-1">
+                <h4 class="text-lg font-medium text-gray-900"><%= @website.theme.name %></h4>
+                <% if @website.theme.description.present? %>
+                  <p class="mt-1 text-sm text-gray-500"><%= @website.theme.description %></p>
+                <% end %>
+                <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500">
+                  <span><%= pluralize(@website.theme.theme_pages.count, 'page') %></span>
+                  <span>•</span>
+                  <span><%= pluralize(@website.theme.websites.count, 'website') %> using this theme</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

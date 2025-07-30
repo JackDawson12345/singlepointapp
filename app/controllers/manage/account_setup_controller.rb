@@ -2,6 +2,7 @@
 class Manage::AccountSetupController < ApplicationController
   before_action :authenticate_user!
   before_action :set_account_setup, only: [:show, :update]
+  before_action :complete_account_setup
   layout 'manage'
 
   STEPS = %w[domain_name package_type support_option payment_method].freeze
@@ -38,9 +39,10 @@ class Manage::AccountSetupController < ApplicationController
         Rails.logger.info "Redirecting to next step: #{next_step}"
         redirect_to "/manage/account-setup/#{next_step}"
       else
-        # All steps completed
-        Rails.logger.info "All steps completed, redirecting to dashboard"
-        redirect_to manage_dashboard_path, notice: 'Account setup completed successfully!'
+        # All steps completed - show payment page instead of redirecting
+        Rails.logger.info "All steps completed, staying on payment step for processing"
+        flash.now[:notice] = 'Please complete your payment to finish setup'
+        render :show
       end
     else
       Rails.logger.error "=== ACCOUNT SETUP UPDATE FAILED ==="

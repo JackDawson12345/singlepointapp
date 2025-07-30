@@ -28,9 +28,14 @@
             <div></div>
           <% end %>
 
-          <%= form.submit (@current_step_index == @total_steps - 1 ? "Complete Setup" : "Continue"),
-                          class: "px-6 py-2 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" %>
-        </div>
+          <% if @step ==  'payment_method' %>
+
+          <% else %>
+            <%= form.submit (@current_step_index == @total_steps - 1 ? "Complete Setup" : "Continue"),
+                            class: "px-6 py-2 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" %>
+        <% end %>
+
+          </div>
       <% end %>
     </div>
   </div>

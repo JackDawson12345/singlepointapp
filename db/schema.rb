@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_30_124956) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_30_143703) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -22,6 +22,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_30_124956) do
     t.string "payment_method"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "payment_status", default: "pending"
+    t.string "stripe_payment_intent_id"
+    t.datetime "paid_at"
+    t.index ["domain_name"], name: "index_account_setups_on_domain_name", unique: true
+    t.index ["payment_status"], name: "index_account_setups_on_payment_status"
+    t.index ["stripe_payment_intent_id"], name: "index_account_setups_on_stripe_payment_intent_id"
     t.index ["user_id"], name: "index_account_setups_on_user_id"
   end
 
@@ -82,10 +88,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_30_124956) do
     t.bigint "user_id", null: false
     t.bigint "theme_id", null: false
     t.string "name"
-    t.string "subdomain"
-    t.text "content_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "published"
     t.index ["theme_id"], name: "index_websites_on_theme_id"
     t.index ["user_id"], name: "index_websites_on_user_id"
   end
