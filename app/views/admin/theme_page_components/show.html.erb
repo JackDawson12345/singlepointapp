@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @theme_page_component %>
+
+<div>
+  <%= link_to "Edit this theme page component", edit_admin_theme_page_component_path(@theme_page_component) %> |
+  <%= link_to "Back to theme page components", admin_theme_page_components_path %>
+
+  <%= button_to "Destroy this theme page component", admin_theme_page_component_path(@theme_page_component), method: :delete %>
+</div>

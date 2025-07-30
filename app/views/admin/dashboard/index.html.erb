@@ -1,0 +1,48 @@
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="flex-1">
+          <p class="text-sm font-medium text-gray-600">Components</p>
+          <p class="text-3xl font-bold text-gray-900"><%= @components.count %></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="flex-1">
+          <p class="text-sm font-medium text-gray-600">Themes</p>
+          <p class="text-3xl font-bold text-gray-900"><%= @themes.count %></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="flex-1">
+          <p class="text-sm font-medium text-gray-600">Websites</p>
+          <p class="text-3xl font-bold text-gray-900"><%= @websites.count %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+    <div class="flex space-x-4">
+      <%= link_to "Create Component", new_admin_component_path,
+                  class: "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" %>
+      <%= link_to "Create Theme", new_admin_theme_path,
+                  class: "bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" %>
+      <%= link_to "View All Components", admin_components_path,
+                  class: "bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" %>
+    </div>
+  </div>
+</div>

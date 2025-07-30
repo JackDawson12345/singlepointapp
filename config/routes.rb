@@ -1,0 +1,26 @@
+Rails.application.routes.draw do
+  root "frontend#index"
+  devise_for :users
+
+  namespace :manage do
+    get "/", to: 'dashboard#index', as: 'dashboard'
+  end
+
+  namespace :admin do
+    resources :websites
+    resources :theme_page_components
+    resources :theme_pages
+    resources :themes
+    resources :components
+    get "/", to: 'dashboard#index', as: 'dashboard'
+    get "/themes/:theme_id/theme-page/new", to: 'theme_pages#new', as: 'new_theme_page'
+    get "/themes/:theme_id/theme-page/:id/edit", to: 'theme_pages#edit', as: 'edit_theme_page'
+    get "/themes/:theme_id/theme-page/:id/", to: 'theme_pages#show', as: 'preview_theme_page'
+    get "/themes/:theme_id/theme-page-component/:page_id/new", to: 'theme_page_components#new', as: 'new_theme_page_components'
+    patch "/themes/:theme_id/theme-pages/reorder", to: 'themes#reorder', as: 'theme_pages_reorder'
+    patch "/themes/:theme_id/theme-page-component/:page_id/new/new_ajax", to: 'theme_page_components#new_ajax', as: 'new_theme_page_components_ajax'
+    patch "/themes/:theme_id/theme-page-component/:page_id/update_positions", to: 'theme_page_components#update_positions', as: 'update_theme_page_component_positions'
+    delete "/themes/:theme_id/theme-page-component/:page_id/:id/delete_ajax", to: 'theme_page_components#delete_ajax', as: 'delete_theme_page_component_ajax'
+  end
+
+end

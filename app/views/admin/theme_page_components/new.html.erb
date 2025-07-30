@@ -1,0 +1,113 @@
+<div class="bg-gray-50 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+
+    <div class="flex justify-between items-start mb-8 pb-6 border-b border-gray-200">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-3 mb-2">
+          <h1 class="text-3xl font-bold text-gray-900"><%= @theme.name %></h1>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+            <%= @themePage.page_type %>
+          </span>
+        </div>
+        <p class="text-lg text-gray-600 leading-relaxed">Manage components for this page type</p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 ml-6 flex-shrink-0">
+        <%= link_to "Preview Page", admin_preview_theme_page_path(theme_id: @theme.id, id: @themePage.id),
+                    class: "inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200" %>
+
+        <%= link_to "Back to Theme", admin_theme_path(@theme),
+                    class: "inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200" %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Available Components -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-semibold text-gray-900">Available Components</h2>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+            <%= @components.count %> available
+          </span>
+        </div>
+
+        <div class="space-y-3 max-h-96 overflow-y-auto">
+          <% @components.each do |component| %>
+            <% component_exists = @existing_component_ids.include?(component.id) %>
+
+            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-200">
+              <div class="flex gap-3 min-w-0 items-center">
+                <h3 class="text-sm font-medium text-gray-900 truncate">
+                  <%= component.name %>
+                </h3>
+                <div class="flex items-center mt-1">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+          <%= component.component_type %>
+        </span>
+                  <% if component_exists %>
+          <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 ml-2">
+            Already Added
+          </span>
+                  <% end %>
+                </div>
+              </div>
+
+              <div class="ml-4 flex-shrink-0">
+                <% unless component_exists %>
+                  <%= form_with url: "/admin/themes/#{params[:theme_id]}/theme-page-component/#{params[:page_id]}/new/new_ajax",
+                                method: :patch,
+                                remote: true,
+                                local: false,
+                                class: "inline-block" do |form| %>
+                    <%= form.hidden_field :component_id, value: component.id %>
+                    <%= form.submit "Add",
+                                    class: "inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 cursor-pointer" %>
+                  <% end %>
+                <% else %>
+        <span class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-500 bg-gray-100">
+          Added
+        </span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <% if @components.empty? %>
+          <div class="text-center py-8">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No components available</h3>
+            <p class="mt-1 text-sm text-gray-500">Create some components first to add them to this page.</p>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Page Components -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-semibold text-gray-900">Page Components</h2>
+          <div class="flex items-center text-sm text-gray-500">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+            </svg>
+            Drag to reorder
+          </div>
+        </div>
+
+
+        <div id="page-components-list">
+          <%= render partial: "page_components_list", locals: { themePageComponents: @themePageComponents } %>
+        </div>
+
+
+
+
+
+
+      </div>
+    </div>
+
+  </div>
+</div>

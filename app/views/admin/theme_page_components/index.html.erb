@@ -1,0 +1,14 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Theme Page Components</h1>
+
+<div id="theme_page_components">
+  <% @theme_page_components.each do |theme_page_component| %>
+    <%= render theme_page_component %>
+    <p>
+      <%= link_to "Show this theme page component", admin_theme_page_component_path(theme_page_component) %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New theme page component", new_admin_theme_page_component_path %>

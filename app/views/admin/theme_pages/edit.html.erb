@@ -1,0 +1,12 @@
+<% content_for :title, "Editing theme page" %>
+
+<h1>Editing theme page</h1>
+
+<%= render "form", admin_theme_page: @admin_theme_page %>
+
+<br>
+
+<div>
+  <%= link_to "Show this theme page", @admin_theme_page %> |
+  <%= link_to "Back to theme pages", admin_theme_pages_path %>
+</div>

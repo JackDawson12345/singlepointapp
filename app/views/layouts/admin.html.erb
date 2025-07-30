@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= content_for(:title) || "Singlepoint" %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= yield :head %>
+
+  <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+  <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+  <link rel="icon" href="/icon.png" type="image/png">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon.png">
+
+  <%# Includes all stylesheet files in app/assets/stylesheets %>
+  <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body>
+<nav class="bg-white shadow-sm border-b">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <div class="flex items-center">
+        <%= link_to "Website Builder", admin_dashboard_path, class: "text-xl font-bold text-gray-900" %>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <%= link_to "Dashboard", admin_dashboard_path, class: "text-gray-600 hover:text-gray-900" %>
+        <%= link_to "Components", admin_components_path, class: "text-gray-600 hover:text-gray-900" %>
+        <%= link_to "Themes", admin_themes_path, class: "text-gray-600 hover:text-gray-900" %>
+
+        <div class="relative">
+          <span class="text-gray-600"><%= current_user.email %></span>
+          <%= link_to "Log out", destroy_user_session_path, class: 'ml-3 text-red-600 hover:text-red-800 bg-transparent border-0 p-0 cursor-pointer', data: { "turbo-method": :delete } %>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<%= render 'shared/notice_alert' %>
+<div class="">
+  <%= yield %>
+</div>
+
+<script>
+    // Ensure Rails UJS is loaded
+    //= require rails-ujs
+
+    // Alternative: If using importmaps, ensure you have this in your application.js:
+    // import Rails from "@rails/ujs"
+    // Rails.start()
+
+    // For Rails 7 with Turbo, you might need to explicitly handle the AJAX
+    document.addEventListener('DOMContentLoaded', function() {
+        // Force traditional AJAX for elements with data-turbo="false"
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('a[data-turbo="false"]');
+            if (link && link.getAttribute('data-method') === 'post') {
+                e.preventDefault();
+
+                // Create form and submit via AJAX
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = link.href;
+                form.style.display = 'none';
+
+                // Add CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                if (csrfToken) {
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'authenticity_token';
+                    csrfInput.value = csrfToken.content;
+                    form.appendChild(csrfInput);
+                }
+
+                // Add parameters from the link
+                const url = new URL(link.href);
+                url.searchParams.forEach((value, key) => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = value;
+                    form.appendChild(input);
+                });
+
+                document.body.appendChild(form);
+
+                // Submit via AJAX
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', form.action);
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                xhr.setRequestHeader('Accept', 'text/javascript');
+
+                const formData = new FormData(form);
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        // Execute the returned JavaScript
+                        eval(xhr.responseText);
+                    }
+                };
+
+                xhr.send(formData);
+                document.body.removeChild(form);
+            }
+        });
+    });
+</script>
+</body>
+</html>

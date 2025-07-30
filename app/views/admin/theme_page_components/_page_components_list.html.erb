@@ -1,0 +1,154 @@
+<div id="sortable-components" class="space-y-3">
+  <% unless themePageComponents.nil? || themePageComponents.empty? %>
+    <% themePageComponents.order(:position).each do |themePageComponent| %>
+      <% component = Component.find(themePageComponent.component_id) %>
+      <div class="sortable-item" data-id="<%= themePageComponent.id %>">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg cursor-move hover:bg-gray-100 transition-colors">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-gray-400 mr-3 drag-handle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+              </svg>
+              <div>
+                <h4 class="text-sm font-medium text-gray-900"><%= component.name %></h4>
+                <p class="text-xs text-gray-500"><%= component.component_type.capitalize %></p>
+              </div>
+            </div>
+
+            <%= form_with url: admin_delete_theme_page_component_ajax_path(
+              theme_id: params[:theme_id],
+              page_id: params[:page_id],
+              id: themePageComponent.id
+            ),
+                          method: :delete,
+                          remote: true,
+                          local: false,
+                          class: "inline-block" do |form| %>
+              <%= form.submit "Delete",
+                              style: "display: none;",
+                              class: "delete-submit-btn" %>
+              <button type="button"
+                      class="text-red-600 hover:text-red-800 delete-component-btn"
+                      data-form="<%= form.object_name %>">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            <% end %>
+
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="min-h-64 border-2 border-dashed border-gray-300 rounded-lg p-4">
+      <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2-2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No components added yet</h3>
+        <p class="mt-1 text-sm text-gray-500">Add components from the left panel to build your page layout.</p>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<!-- Include SortableJS from CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle delete button clicks
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.delete-component-btn')) {
+                e.preventDefault();
+                const deleteBtn = e.target.closest('.delete-component-btn');
+                const form = deleteBtn.closest('form');
+
+                const submitBtn = form.querySelector('.delete-submit-btn');
+                submitBtn.click();
+            }
+        });
+
+        // Initialize drag and drop functionality
+        const sortableContainer = document.getElementById('sortable-components');
+
+        if (sortableContainer && sortableContainer.children.length > 0) {
+            const sortable = Sortable.create(sortableContainer, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                dragClass: 'sortable-drag',
+                handle: '.drag-handle',
+                onEnd: function(evt) {
+                    // Get the new order of component IDs
+                    const componentIds = Array.from(sortableContainer.children).map(item =>
+                        item.getAttribute('data-id')
+                    );
+
+                    // Send AJAX request to update positions
+                    updateComponentPositions(componentIds);
+                }
+            });
+        }
+
+        function updateComponentPositions(componentIds) {
+            const themeId = '<%= params[:theme_id] %>';
+            const pageId = '<%= params[:page_id] %>';
+
+            fetch(`/admin/themes/${themeId}/theme-page-component/${pageId}/update_positions`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    component_ids: componentIds
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        console.log('Positions updated successfully');
+                        // Optional: Show a success message
+                    } else {
+                        console.error('Failed to update positions');
+                        // Optional: Show an error message and revert the order
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating positions:', error);
+                    // Optional: Show an error message and revert the order
+                });
+        }
+    });
+</script>
+
+<style>
+    .sortable-ghost {
+        opacity: 0.4;
+        background: #f3f4f6;
+    }
+
+    .sortable-chosen {
+        transform: rotate(5deg);
+    }
+
+    .sortable-drag {
+        transform: rotate(5deg);
+    }
+
+    .sortable-item {
+        transition: transform 0.2s ease;
+    }
+
+    .sortable-item:hover {
+        transform: translateY(-1px);
+    }
+</style>

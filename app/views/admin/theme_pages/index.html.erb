@@ -1,0 +1,14 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Theme Pages</h1>
+
+<div id="theme_pages">
+  <% @theme_pages.each do |theme_page| %>
+    <%= render theme_page %>
+    <p>
+      <%= link_to "Show this theme page", admin_theme_page_path(theme_page) %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New theme page", new_admin_theme_page_path %>
