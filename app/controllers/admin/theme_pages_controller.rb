@@ -67,6 +67,6 @@ class Admin::ThemePagesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def theme_page_params
-    params.expect(theme_page: [ :theme_id, :page_type, :component_order ])
+    params.expect(theme_page: [ :theme_id, :page_type, :component_order, :package ])
   end
 end

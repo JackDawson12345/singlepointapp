@@ -13,4 +13,10 @@ class ApplicationController < ActionController::Base
       redirect_to admin_dashboard_path, alert: "Redirected to admin dashboard."
     end
   end
+
+  def account_setup?
+    if !current_user.admin? && !current_user.account_setup
+      byebug
+    end
+  end
 end

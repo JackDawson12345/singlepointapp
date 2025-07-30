@@ -11,7 +11,15 @@ class ThemePage < ApplicationRecord
     "Services",
     "Testimonials",
     "FAQs",
-    "Contact"
+    "Contact",
+    "Shop",
+    "Product Page",
+    "Category Page",
+    "Cart",
+    "Checkout",
+    "Order Confirmation",
+    "Wishlist",
+    "Account Page"
   ].freeze
 
   validates :page_type, inclusion: { in: PAGE_TYPES }

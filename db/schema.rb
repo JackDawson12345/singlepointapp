@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_29_125307) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_30_124956) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "account_setups", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "domain_name"
+    t.string "package_type"
+    t.string "support_option"
+    t.string "payment_method"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_account_setups_on_user_id"
+  end
 
   create_table "components", force: :cascade do |t|
     t.string "name"
@@ -42,6 +53,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_29_125307) do
     t.text "component_order"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "package"
     t.index ["theme_id"], name: "index_theme_pages_on_theme_id"
   end
 
@@ -78,6 +90,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_29_125307) do
     t.index ["user_id"], name: "index_websites_on_user_id"
   end
 
+  add_foreign_key "account_setups", "users"
   add_foreign_key "theme_page_components", "components"
   add_foreign_key "theme_page_components", "theme_pages"
   add_foreign_key "theme_pages", "themes"

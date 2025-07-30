@@ -1,10 +1,20 @@
 Rails.application.routes.draw do
   root "frontend#index"
-  devise_for :users
+  devise_for :users, controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations',
+    passwords: 'users/passwords',
+    confirmations: 'users/confirmations',
+    unlocks: 'users/unlocks'
+  }
 
   namespace :manage do
     get "/", to: 'dashboard#index', as: 'dashboard'
-    get "/account-setup", to: 'account_setup#index', as: 'account_setup'
+
+    get "/account-setup", to: 'account_setup#show', as: 'account_setup'
+    patch "/account-setup", to: 'account_setup#update'
+    get "/account-setup/:step", to: 'account_setup#show'
+    patch "/account-setup/:step", to: 'account_setup#update'
   end
 
   namespace :admin do

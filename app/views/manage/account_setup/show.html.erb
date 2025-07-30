@@ -1,0 +1,77 @@
+<!-- app/views/manage/account_setup/show.html.erb -->
+<div class="min-h-screen bg-gray-50 py-12">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Progress Bar -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-medium text-gray-700">Step <%= @current_step_index + 1 %> of <%= @total_steps %></span>
+        <span class="text-sm text-gray-500"><%= ((@current_step_index + 1).to_f / @total_steps * 100).round %>% Complete</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2">
+        <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: <%= ((@current_step_index + 1).to_f / @total_steps * 100).round %>%"></div>
+      </div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="bg-white shadow-lg rounded-lg p-8">
+      <%= form_with model: @account_setup, url: "/manage/account-setup?step=#{@step}", local: true, method: :patch, class: "space-y-6", data: { turbo: false } do |form| %>
+
+        <!-- Step Content -->
+        <%= render "step_#{@step}", form: form, account_setup: @account_setup %>
+
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between pt-6 border-t border-gray-200">
+          <% if @current_step_index > 0 %>
+            <%= link_to "Back", manage_account_setup_path(step: Manage::AccountSetupController::STEPS[@current_step_index - 1]),
+                        class: "px-6 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" %>
+          <% else %>
+            <div></div>
+          <% end %>
+
+          <%= form.submit (@current_step_index == @total_steps - 1 ? "Complete Setup" : "Continue"),
+                          class: "px-6 py-2 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle radio button visual feedback
+        const radioButtons = document.querySelectorAll('input[type="radio"]');
+
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Remove selected styling from all options in this group
+                const groupName = this.name;
+                const allInGroup = document.querySelectorAll(`input[name="${groupName}"]`);
+
+                allInGroup.forEach(r => {
+                    const container = r.closest('label').querySelector('div');
+                    const checkmark = container.querySelector('.checkmark-indicator');
+
+                    // Reset all in group
+                    container.classList.remove('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-200');
+                    container.classList.add('border-gray-200');
+                    if (checkmark) checkmark.style.display = 'none';
+                });
+
+                // Apply selected styling to checked option
+                if (this.checked) {
+                    const container = this.closest('label').querySelector('div');
+                    const checkmark = container.querySelector('.checkmark-indicator');
+
+                    container.classList.remove('border-gray-200');
+                    container.classList.add('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-200');
+                    if (checkmark) checkmark.style.display = 'block';
+                }
+            });
+
+            // Trigger change event for initially checked radios
+            if (radio.checked) {
+                radio.dispatchEvent(new Event('change'));
+            }
+        });
+    });
+</script>

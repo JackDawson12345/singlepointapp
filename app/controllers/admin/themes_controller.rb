@@ -57,10 +57,10 @@ class Admin::ThemesController < ApplicationController
       render :new, status: :unprocessable_entity
     end
 
-    homePage = ThemePage.create(theme_id: @theme.id, page_type: 'Home', component_order: 1)
-    aboutPage = ThemePage.create(theme_id: @theme.id, page_type: 'About', component_order: 2)
-    servicePage = ThemePage.create(theme_id: @theme.id, page_type: 'Services', component_order: 3)
-    contactPage = ThemePage.create(theme_id: @theme.id, page_type: 'Contact', component_order: 4)
+    homePage = ThemePage.create(theme_id: @theme.id, page_type: 'Home', component_order: 1, package: 'Bespoke')
+    aboutPage = ThemePage.create(theme_id: @theme.id, page_type: 'About', component_order: 2, package: 'Bespoke')
+    servicePage = ThemePage.create(theme_id: @theme.id, page_type: 'Services', component_order: 3, package: 'Bespoke')
+    contactPage = ThemePage.create(theme_id: @theme.id, page_type: 'Contact', component_order: 4, package: 'Bespoke')
   end
 
   # PATCH/PUT /admin/themes/1

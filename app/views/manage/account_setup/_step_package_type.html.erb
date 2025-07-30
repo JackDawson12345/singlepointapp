@@ -1,0 +1,95 @@
+<!-- app/views/manage/account_setup/_step_package_type.html.erb -->
+<div class="text-center mb-8">
+  <h2 class="text-3xl font-bold text-gray-900 mb-2">Select Your Package</h2>
+  <p class="text-lg text-gray-600">Choose the package that best fits your needs</p>
+</div>
+
+<div class="space-y-4">
+  <% if @account_setup.errors[:package_type].any? %>
+    <div class="text-red-600 text-sm mb-4">
+      <%= @account_setup.errors[:package_type].first %>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Bespoke Package -->
+    <label class="relative block cursor-pointer">
+      <%= form.radio_button :package_type, "Bespoke",
+                            name: "account_setup[package_type]",
+                            class: "sr-only peer",
+                            checked: @account_setup.package_type == "Bespoke" %>
+      <div class="border-2 border-gray-200 rounded-lg p-6 hover:border-blue-300 peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-semibold text-gray-900">Bespoke</h3>
+          <span class="text-2xl font-bold text-blue-600">£500</span>
+        </div>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex items-center">
+            <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Custom design tailored to your brand
+          </li>
+          <li class="flex items-center">
+            <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Up to 10 pages
+          </li>
+          <li class="flex items-center">
+            <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Contact forms & basic functionality
+          </li>
+          <li class="flex items-center">
+            <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Mobile responsive design
+          </li>
+        </ul>
+      </div>
+    </label>
+
+    <!-- E-commerce Package -->
+    <label class="relative block cursor-pointer">
+      <%= form.radio_button :package_type, "E-commerce",
+                            name: "account_setup[package_type]",
+                            class: "sr-only peer",
+                            checked: @account_setup.package_type == "E-commerce" %>
+      <div class="border-2 border-gray-200 rounded-lg p-6 hover:border-blue-300 peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-semibold text-gray-900">E-commerce</h3>
+          <span class="text-2xl font-bold text-blue-600">£1000</span>
+        </div>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex items-center">
+            <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Full online store functionality
+          </li>
+          <li class="flex items-center">
+            <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Product catalog & inventory management
+          </li>
+          <li class="flex items-center">
+            <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Payment processing integration
+          </li>
+          <li class="flex items-center">
+            <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Customer accounts & order tracking
+          </li>
+        </ul>
+      </div>
+    </label>
+  </div>
+</div>

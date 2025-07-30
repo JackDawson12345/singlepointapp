@@ -1,0 +1,97 @@
+<!-- app/views/manage/account_setup/_step_support_option.html.erb -->
+<div class="text-center mb-8">
+  <h2 class="text-3xl font-bold text-gray-900 mb-2">How Can We Help?</h2>
+  <p class="text-lg text-gray-600">Choose your preferred level of support</p>
+</div>
+
+<div class="space-y-4">
+  <% if @account_setup.errors[:support_option].any? %>
+    <div class="text-red-600 text-sm mb-4">
+      <%= @account_setup.errors[:support_option].first %>
+    </div>
+  <% end %>
+
+  <div class="space-y-4">
+    <!-- Do it myself option -->
+    <label class="relative block cursor-pointer">
+      <%= form.radio_button :support_option, "Do it myself",
+                            name: "account_setup[support_option]",
+                            class: "sr-only peer",
+                            checked: @account_setup.support_option == "Do it myself" %>
+      <div class="border-2 border-gray-200 rounded-lg p-6 hover:border-blue-300 peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+            </svg>
+          </div>
+          <div class="ml-4 flex-1">
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Do it myself</h3>
+            <p class="text-gray-600 mb-3">I'm comfortable managing the setup process independently</p>
+            <ul class="space-y-1 text-sm text-gray-500">
+              <li class="flex items-center">
+                <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Self-service setup guides
+              </li>
+              <li class="flex items-center">
+                <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Documentation and tutorials
+              </li>
+              <li class="flex items-center">
+                <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Email support when needed
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </label>
+
+    <!-- I need help option -->
+    <label class="relative block cursor-pointer">
+      <%= form.radio_button :support_option, "I need help",
+                            name: "account_setup[support_option]",
+                            class: "sr-only peer",
+                            checked: @account_setup.support_option == "I need help" %>
+      <div class="border-2 border-gray-200 rounded-lg p-6 hover:border-blue-300 peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+          </div>
+          <div class="ml-4 flex-1">
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">I need help</h3>
+            <p class="text-gray-600 mb-3">I'd like assistance with the setup and configuration</p>
+            <ul class="space-y-1 text-sm text-gray-500">
+              <li class="flex items-center">
+                <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                One-on-one consultation call
+              </li>
+              <li class="flex items-center">
+                <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Guided setup assistance
+              </li>
+              <li class="flex items-center">
+                <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Priority support access
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </label>
+  </div>
+</div>
