@@ -1,3 +1,4 @@
+# app/controllers/admin/theme_pages_controller.rb
 class Admin::ThemePagesController < ApplicationController
   layout 'admin'
   before_action :set_theme_page, only: %i[ show edit update destroy ]
@@ -15,6 +16,12 @@ class Admin::ThemePagesController < ApplicationController
     @components = Component.joins(:theme_page_components)
                            .where(theme_page_components: { theme_page_id: @theme_page.id })
                            .order('theme_page_components.position')
+
+    # Ensure we have access to the theme for template processing
+    @theme = @theme_page.theme
+
+    # Use a different layout for preview
+    render layout: false
   end
 
   # GET /admin/theme_pages/new
@@ -53,13 +60,13 @@ class Admin::ThemePagesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_theme_page
-      @theme_page = ThemePage.find(params.expect(:id))
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_theme_page
+    @theme_page = ThemePage.find(params.expect(:id))
+  end
 
-    # Only allow a list of trusted parameters through.
-    def theme_page_params
-      params.expect(theme_page: [ :theme_id, :page_type, :component_order ])
-    end
+  # Only allow a list of trusted parameters through.
+  def theme_page_params
+    params.expect(theme_page: [ :theme_id, :page_type, :component_order ])
+  end
 end

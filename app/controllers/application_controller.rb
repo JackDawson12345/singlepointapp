@@ -4,7 +4,13 @@ class ApplicationController < ActionController::Base
 
   def admin?
     unless current_user.admin?
-      redirect_to root_path, alert: "You are not allowed to perform this action."
+      redirect_to manage_dashboard_path, alert: "Redirected to manage dashboard."
+    end
+  end
+
+  def customer?
+    if current_user.admin?
+      redirect_to admin_dashboard_path, alert: "Redirected to admin dashboard."
     end
   end
 end

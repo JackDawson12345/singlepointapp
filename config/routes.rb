@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
   namespace :manage do
     get "/", to: 'dashboard#index', as: 'dashboard'
+    get "/account-setup", to: 'account_setup#index', as: 'account_setup'
   end
 
   namespace :admin do

@@ -1,3 +1,49 @@
+<!-- app/views/admin/theme_pages/show.html.erb -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Preview: <%= @theme_page.page_type %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+
+  <!-- Inject CSS from components -->
+  <style>
+    <% @components.each do |component| %>
+    <% if component.css_content.present? %>
+    <%= raw component.css_content %>
+    <% end %>
+    <% end %>
+  </style>
+</head>
+<body>
+<!-- Preview Header -->
+<div class="bg-gray-800 text-white p-4">
+  <div class="max-w-7xl mx-auto">
+    <!-- Main Header -->
+    <div class="text-center">
+      <strong>Preview Mode:</strong> <%= @theme_page.theme.name %> - <%= @theme_page.page_type %> Page
+      <%= link_to "← Back to Edit", admin_new_theme_page_components_path(theme_id: @theme_page.theme.id, page_id: @theme_page.id),
+                  class: "ml-4 text-blue-300 hover:text-blue-100" %>
+    </div>
+
+  </div>
+</div>
+
+<!-- Render Components -->
 <% @components.each do |component| %>
-  <%= raw component.html_content %>
+  <div class="component-wrapper" data-component-name="<%= component.name %>" data-component-type="<%= component.component_type %>">
+    <%= raw process_component_template(component, @theme_page.theme, @theme_page) %>
+  </div>
 <% end %>
+
+<!-- Inject JavaScript from components -->
+<script>
+    <% @components.each do |component| %>
+    <% if component.js_content.present? %>
+    <%= raw component.js_content %>
+    <% end %>
+    <% end %>
+</script>
+</body>
+</html>
