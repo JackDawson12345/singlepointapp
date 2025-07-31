@@ -3,11 +3,47 @@ module ComponentsHelper
 
   # Main method to render component (simplified version)
   def render_component_for_website(component, theme_page, website = nil)
-    # For now, just render the component HTML with edit wrapper if in builder mode
-    html = component.html_content || ""
+    Rails.logger.info "=== RENDERING COMPONENT WITH CUSTOMIZATIONS ==="
+    Rails.logger.info "Component: #{component.name} (ID: #{component.id})"
+    Rails.logger.info "Theme Page: #{theme_page.id}"
+    Rails.logger.info "Website: #{website&.id}"
 
-    # Apply basic placeholder replacements
-    html = process_basic_placeholders(html, component)
+    # Get the base HTML content
+    html = component.html_content || ""
+    Rails.logger.info "Original HTML: #{html[0..100]}..."
+
+    if website
+      # Get customizations for this specific website
+      customizations = WebsiteCustomization.for_component(website.id, component.id, theme_page.id)
+      Rails.logger.info "Found customizations: #{customizations.inspect}"
+
+      if customizations.any?
+        # Apply customizations using the component's render method
+        if component.respond_to?(:render_with_customizations)
+          html = component.render_with_customizations(customizations)
+          Rails.logger.info "Applied customizations via component method"
+        else
+          # Fallback: manually replace placeholders
+          customizations.each do |field_name, field_value|
+            placeholder = "{{#{field_name}}}"
+            if html.include?(placeholder)
+              html = html.gsub(placeholder, field_value.to_s)
+              Rails.logger.info "Replaced #{placeholder} with #{field_value}"
+            end
+          end
+        end
+      else
+        Rails.logger.info "No customizations found, using defaults"
+        # Apply default placeholder replacements
+        html = process_basic_placeholders(html, component)
+      end
+    else
+      Rails.logger.info "No website provided, using defaults"
+      # Apply default placeholder replacements
+      html = process_basic_placeholders(html, component)
+    end
+
+    Rails.logger.info "Final HTML: #{html[0..100]}..."
 
     # Wrap component for editing if in builder mode
     if params[:action] == 'builder' && website

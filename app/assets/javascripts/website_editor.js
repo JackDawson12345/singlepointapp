@@ -133,6 +133,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(form);
         const url = form.action;
 
+        // Get CSRF token from meta tag
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
         // Show saving state
         const submitButton = form.querySelector('button[type="submit"]');
         const originalText = submitButton.textContent;
@@ -143,7 +146,9 @@ document.addEventListener('DOMContentLoaded', function() {
             method: 'PATCH',
             body: formData,
             headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                'X-CSRF-Token': csrfToken  // Add CSRF token to headers
             }
         })
             .then(response => response.json())

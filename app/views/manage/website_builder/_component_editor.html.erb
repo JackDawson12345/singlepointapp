@@ -1,4 +1,5 @@
-<!-- app/views/manage/website_builder/_component_editor.html.erb -->
+<!-- Replace your app/views/manage/website_builder/_component_editor.html.erb with this: -->
+
 <div class="component-editor-modal" id="component-editor-<%= component.id %>">
   <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
     <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
@@ -27,7 +28,7 @@
             <% field_types = component.respond_to?(:field_types_hash) ? component.field_types_hash : {} %>
 
             <% if editable_fields.empty? %>
-              <!-- Fallback: Show common fields if no editable_fields defined -->
+              <!-- Show message if no editable fields -->
               <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-4">
                 <div class="flex">
                   <div class="flex-shrink-0">
@@ -43,20 +44,11 @@
                 </div>
               </div>
 
-              <!-- Show some basic fields anyway -->
+              <!-- Show some default fields for testing -->
               <div class="form-group">
                 <%= label_tag :title, "Title", class: "block text-sm font-medium text-gray-700" %>
                 <%= text_field_tag :title, customizations['title'] || 'Sample Title',
-                                   class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
-                                   data: { field: 'title' } %>
-              </div>
-
-              <div class="form-group">
-                <%= label_tag :content, "Content", class: "block text-sm font-medium text-gray-700" %>
-                <%= text_area_tag :content, customizations['content'] || 'Sample content text',
-                                  rows: 3,
-                                  class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
-                                  data: { field: 'content' } %>
+                                   class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
               </div>
 
             <% else %>
@@ -66,48 +58,35 @@
                   <%= label_tag field_name, field_name.humanize, class: "block text-sm font-medium text-gray-700" %>
 
                   <% field_type = field_types[field_name] || 'text' %>
-                  <% current_value = customizations[field_name] || get_default_field_value(field_name) %>
+                  <% current_value = customizations[field_name] || (component.respond_to?(:get_default_value) ? component.get_default_value(field_name) : "Default #{field_name.humanize}") %>
 
                   <% case field_type %>
-                  <% when 'text' %>
-                    <%= text_field_tag field_name, current_value,
-                                       class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
-                                       data: { field: field_name } %>
-
                   <% when 'textarea' %>
                     <%= text_area_tag field_name, current_value,
                                       rows: 3,
-                                      class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
-                                      data: { field: field_name } %>
-
+                                      class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
                   <% when 'color' %>
                     <div class="mt-1 flex items-center space-x-2">
                       <%= color_field_tag field_name, current_value,
-                                          class: "h-10 w-20 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500",
-                                          data: { field: field_name } %>
+                                          class: "h-10 w-20 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" %>
                       <%= text_field_tag "#{field_name}_hex", current_value,
                                          class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
-                                         placeholder: "#000000",
-                                         data: { field: field_name, type: 'hex' } %>
+                                         placeholder: "#000000" %>
                     </div>
-
                   <% when 'image' %>
                     <div class="mt-1">
                       <%= url_field_tag field_name, current_value,
                                         class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
-                                        placeholder: "https://example.com/image.jpg",
-                                        data: { field: field_name } %>
-                      <% if current_value.present? %>
+                                        placeholder: "https://example.com/image.jpg" %>
+                      <% if current_value.present? && current_value.match(/^https?:\/\//) %>
                         <div class="mt-2">
                           <img src="<%= current_value %>" alt="Preview" class="h-20 w-20 object-cover rounded-md border">
                         </div>
                       <% end %>
                     </div>
-
                   <% else %>
                     <%= text_field_tag field_name, current_value,
-                                       class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
-                                       data: { field: field_name } %>
+                                       class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
                   <% end %>
                 </div>
               <% end %>
@@ -137,26 +116,3 @@
     </div>
   </div>
 </div>
-
-<%
-  def get_default_field_value(field_name)
-    case field_name.downcase
-    when 'title'
-      'Default Title'
-    when 'subtitle'
-      'Default Subtitle'
-    when 'text', 'content'
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-    when 'button_text'
-      'Click Here'
-    when 'image_url'
-      'https://via.placeholder.com/300x200'
-    when 'background_color', 'color'
-      '#3b82f6'
-    when 'logo'
-      'Logo'
-    else
-      "Default #{field_name.humanize}"
-    end
-  end
-%>
