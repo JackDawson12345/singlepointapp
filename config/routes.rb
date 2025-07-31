@@ -26,6 +26,7 @@ Rails.application.routes.draw do
 
     # Website Builder Routes - ADD THESE LINES
     get "/website", to: "website_builder#builder", as: 'website_builder'
+    get "/website/page/:page_id", to: "website_builder#builder", as: 'website_builder_page'
     get "/website/preview", to: "dashboard#preview_website", as: 'preview_website'
     get "/website/preview/:page_id", to: "dashboard#preview_website", as: 'preview_website_page'
 

@@ -1,61 +1,158 @@
 # app/helpers/components_helper.rb
 module ComponentsHelper
-
-  # Main method to render component (simplified version)
   def render_component_for_website(component, theme_page, website = nil)
-    Rails.logger.info "=== RENDERING COMPONENT WITH CUSTOMIZATIONS ==="
+    Rails.logger.info "=== RENDERING COMPONENT WITH CUSTOMISATIONS ==="
     Rails.logger.info "Component: #{component.name} (ID: #{component.id})"
     Rails.logger.info "Theme Page: #{theme_page.id}"
     Rails.logger.info "Website: #{website&.id}"
 
-    # Get the base HTML content
     html = component.html_content || ""
     Rails.logger.info "Original HTML: #{html[0..100]}..."
 
     if website
-      # Get customizations for this specific website
-      customizations = WebsiteCustomization.for_component(website.id, component.id, theme_page.id)
-      Rails.logger.info "Found customizations: #{customizations.inspect}"
+      customisations = WebsiteCustomization.for_component(website.id, component.id, theme_page.id)
+      Rails.logger.info "Found customisations: #{customisations.inspect}"
 
-      if customizations.any?
-        # Apply customizations using the component's render method
-        if component.respond_to?(:render_with_customizations)
-          html = component.render_with_customizations(customizations)
-          Rails.logger.info "Applied customizations via component method"
+      if customisations.any?
+        if component.respond_to?(:render_with_customisations)
+          html = component.render_with_customisations(customisations)
+          Rails.logger.info "Applied customisations via component method"
         else
-          # Fallback: manually replace placeholders
-          customizations.each do |field_name, field_value|
+          customisations.each do |field_name, field_value|
             placeholder = "{{#{field_name}}}"
-            if html.include?(placeholder)
-              html = html.gsub(placeholder, field_value.to_s)
-              Rails.logger.info "Replaced #{placeholder} with #{field_value}"
-            end
+            html = html.gsub(placeholder, field_value.to_s)
+            Rails.logger.info "Replaced #{placeholder} with #{field_value}"
           end
         end
       else
-        Rails.logger.info "No customizations found, using defaults"
-        # Apply default placeholder replacements
+        Rails.logger.info "No customisations found, using defaults"
         html = process_basic_placeholders(html, component)
       end
     else
       Rails.logger.info "No website provided, using defaults"
-      # Apply default placeholder replacements
       html = process_basic_placeholders(html, component)
     end
 
-    Rails.logger.info "Final HTML: #{html[0..100]}..."
+    # Continue processing template patterns and placeholders
+    if component.template_patterns.present?
+      html = process_template_patterns(html, component.template_patterns, theme_page&.theme, theme_page)
+    end
 
-    # Wrap component for editing if in builder mode
+    html = process_simple_placeholders(html, component, theme_page&.theme)
+
     if params[:action] == 'builder' && website
       html = wrap_component_for_editing(html, component, theme_page)
     end
 
+    Rails.logger.info "Final HTML: #{html[0..100]}..."
+
     html.html_safe
   end
 
-  # Process basic placeholders in component HTML
+  def process_component_template(component, theme = nil, current_page = nil)
+    return component.html_content if component.html_content.blank?
+
+    html = component.html_content.dup
+
+    if component.template_patterns.present?
+      html = process_template_patterns(html, component.template_patterns, theme, current_page)
+    end
+
+    html = process_simple_placeholders(html, component, theme)
+
+    html
+  end
+
+  def component_field_types_json(component)
+    if component.respond_to?(:field_types_hash)
+      component.field_types_hash.to_json
+    else
+      '{}'.to_json
+    end
+  end
+
+  def component_customisations_json(component, theme_page, website)
+    if defined?(WebsiteCustomization) && website
+      WebsiteCustomization.for_component(website.id, component.id, theme_page.id).to_json
+    else
+      '{}'.to_json
+    end
+  end
+
+  private
+
+  def process_template_patterns(html, template_patterns_json, theme, current_page = nil)
+    begin
+      patterns = JSON.parse(template_patterns_json)
+
+      patterns.each do |placeholder, pattern_config|
+        case placeholder
+        when 'nav_items'
+          html = process_nav_items(html, pattern_config, theme, current_page)
+        end
+      end
+    rescue JSON::ParserError => e
+      Rails.logger.error "Failed to parse template patterns: #{e.message}"
+    end
+
+    html
+  end
+
+  def process_nav_items(html, pattern_config, theme, current_page = nil)
+    return html unless theme&.theme_pages&.any?
+
+    nav_item_template = extract_nav_item_template(pattern_config)
+
+    nav_items_html = theme.theme_pages.order(:component_order).map do |theme_page|
+      preview_url = Rails.application.routes.url_helpers.admin_preview_theme_page_path(
+        theme_id: theme.id,
+        id: theme_page.id
+      )
+
+      nav_item_html = nav_item_template.gsub('{{nav_item}}', theme_page.page_type)
+      nav_item_html = nav_item_html.gsub('href="#"', "href=\"#{preview_url}\"")
+
+      if current_page && current_page.id == theme_page.id
+        nav_item_html = nav_item_html.gsub(
+          'text-gray-900 hover:text-blue-600',
+          'text-blue-600 font-semibold bg-blue-50'
+        )
+      end
+
+      nav_item_html
+    end.join("\n                        ")
+
+    html.gsub('{{nav_items}}', nav_items_html)
+  end
+
+  def extract_nav_item_template(pattern_config)
+    case pattern_config
+    when String
+      pattern_config
+    when Hash
+      pattern_config['template'] || pattern_config.to_s
+    else
+      '<a href="#" class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-300">{{nav_item}}</a>'
+    end
+  end
+
+  def process_simple_placeholders(html, component, theme)
+    if component.editable_fields.present?
+      editable_fields = component.editable_fields.split(',').map(&:strip)
+
+      editable_fields.each do |field|
+        case field.downcase
+        when 'logo'
+          logo_text = theme&.name || "Logo"
+          html = html.gsub("{{#{field}}}", logo_text)
+        end
+      end
+    end
+
+    html
+  end
+
   def process_basic_placeholders(html, component)
-    # Replace common placeholders with default values
     replacements = {
       '{{title}}' => 'Sample Title',
       '{{subtitle}}' => 'Sample Subtitle',
@@ -76,7 +173,6 @@ module ComponentsHelper
     html
   end
 
-  # Wrap component with editing controls
   def wrap_component_for_editing(html, component, theme_page)
     <<~HTML
       <div class="editable-component" 
@@ -98,24 +194,5 @@ module ComponentsHelper
         </div>
       </div>
     HTML
-  end
-
-  # Helper method for getting component field types for JavaScript
-  def component_field_types_json(component)
-    if component.respond_to?(:field_types_hash)
-      component.field_types_hash.to_json
-    else
-      '{}'.to_json
-    end
-  end
-
-  # Helper method to get customizations as JSON
-  def component_customizations_json(component, theme_page, website)
-    if defined?(WebsiteCustomization) && website
-      customizations = WebsiteCustomization.for_component(website.id, component.id, theme_page.id)
-      customizations.to_json
-    else
-      '{}'.to_json
-    end
   end
 end

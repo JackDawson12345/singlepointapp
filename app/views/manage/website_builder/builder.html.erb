@@ -23,6 +23,9 @@
     <div class="flex items-center space-x-4">
       <h1 class="text-xl font-semibold text-gray-900">Website Builder</h1>
       <span class="text-sm text-gray-500">Editing: <%= @website.name %></span>
+      <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+        <%= @currentPage.page_type %>
+      </span>
     </div>
 
     <div class="flex items-center space-x-3">
@@ -43,32 +46,21 @@
     <h2 class="text-lg font-medium text-gray-900 mb-4">Pages</h2>
 
     <div class="space-y-2">
-      <% @websitePages.order(:component_order).each do |page| %>
-        <div class="page-item <%= 'active' if page == @homePage %>" data-page-id="<%= page.id %>">
-          <button class="w-full text-left px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md <%= 'bg-blue-50 text-blue-700' if page == @homePage %>">
-            <%= page.page_type %>
-          </button>
+      <% @websitePages.each do |page| %>
+        <div class="page-item" data-page-id="<%= page.id %>">
+          <%= link_to manage_website_builder_path(page_id: page.id),
+                      class: "block w-full text-left px-3 py-2 text-sm font-medium rounded-md transition-colors #{page == @currentPage ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-gray-700 hover:bg-gray-100 border border-transparent'}" do %>
+            <div class="flex items-center justify-between">
+              <span><%= page.page_type %></span>
+              <span class="text-xs <%= page == @currentPage ? 'text-blue-500' : 'text-gray-400' %>">
+                <%= Component.joins(:theme_page_components).where(theme_page_components: { theme_page_id: page.id }).count %>
+              </span>
+            </div>
+          <% end %>
         </div>
       <% end %>
     </div>
 
-    <!-- Component Library (for future expansion) -->
-    <div class="mt-8">
-      <h3 class="text-md font-medium text-gray-900 mb-3">Components</h3>
-      <div class="text-sm text-gray-500">
-        <p>Click on any component in the preview to edit it.</p>
-      </div>
-    </div>
-
-    <!-- Website Stats -->
-    <div class="mt-8 p-3 bg-gray-50 rounded-md">
-      <h4 class="text-sm font-medium text-gray-900 mb-2">Website Stats</h4>
-      <div class="space-y-1 text-xs text-gray-600">
-        <div>Pages: <%= @websitePages.count %></div>
-        <div>Components: <%= @components.count %></div>
-        <div>Customizations: <%= @website.website_customizations.count %></div>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -78,21 +70,40 @@
     <!-- Page Header -->
     <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-medium text-gray-900">
-          <%= @homePage.page_type %> Page
-        </h2>
-        <div class="text-sm text-gray-500">
-          <%= pluralize(@components.count, 'component') %>
+        <div>
+          <h2 class="text-lg font-medium text-gray-900">
+            <%= @currentPage.page_type %> Page
+          </h2>
+          <p class="text-sm text-gray-500 mt-1">
+            <%= pluralize(@components.count, 'editable component') %>
+            <% if @website.website_customizations.where(theme_page_id: @currentPage.id).count > 0 %>
+              • <%= pluralize(@website.website_customizations.where(theme_page_id: @currentPage.id).count, 'customization') %> applied
+            <% end %>
+          </p>
+        </div>
+
+        <!-- Page Actions -->
+        <div class="flex items-center space-x-2">
+          <% if @currentPage != @websitePages.first %>
+            <%= link_to "← Previous", manage_website_builder_path(page_id: @websitePages[@websitePages.index(@currentPage) - 1].id),
+                        class: "px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-50" %>
+          <% end %>
+          <% if @currentPage != @websitePages.last %>
+            <%= link_to "Next →", manage_website_builder_path(page_id: @websitePages[@websitePages.index(@currentPage) + 1].id),
+                        class: "px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-50" %>
+          <% end %>
         </div>
       </div>
     </div>
 
     <!-- Page Content -->
     <div class="page-content">
-      <% @components.each do |component| %>
-        <div class="component-wrapper">
-          <%= render_component_for_website(component, @homePage, @website) %>
-        </div>
+      <% if @components.any? %>
+        <% @components.each do |component| %>
+          <div class="component-wrapper">
+            <%= render_component_for_website(component, @currentPage, @website) %>
+          </div>
+        <% end %>
       <% end %>
     </div>
   </div>
@@ -102,11 +113,37 @@
     <div class="text-center py-12">
       <div class="text-gray-400 mb-4">
         <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012 2v2M7 7h10" />
         </svg>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">No Components Found</h3>
-      <p class="text-gray-500">This page doesn't have any components yet. Contact your administrator to add components to this theme.</p>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No Components on this Page</h3>
+      <p class="text-gray-500 mb-4">The "<%= @currentPage.page_type %>" page doesn't have any components yet.</p>
+
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+        <p class="text-sm text-blue-800 mb-3">
+          <strong>Need components on this page?</strong><br>
+          Contact your administrator to add components to the "<%= @currentPage.page_type %>" page.
+        </p>
+      </div>
+
+      <!-- Show links to pages that do have components -->
+      <% pages_with_components = @websitePages.select { |p| Component.joins(:theme_page_components).where(theme_page_components: { theme_page_id: p.id }).exists? } %>
+      <% if pages_with_components.any? && pages_with_components.exclude?(@currentPage) %>
+        <div class="mt-6">
+          <p class="text-sm text-gray-600 mb-3">Meanwhile, try editing these pages:</p>
+          <div class="flex flex-wrap justify-center gap-2">
+            <% pages_with_components.each do |page| %>
+              <%= link_to manage_website_builder_path(page_id: page.id),
+                          class: "inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50" do %>
+                <%= page.page_type %>
+                <span class="ml-2 text-xs text-gray-500">
+                  (<%= Component.joins(:theme_page_components).where(theme_page_components: { theme_page_id: page.id }).count %>)
+                </span>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
     </div>
   <% end %>
 </div>
@@ -132,9 +169,14 @@
     // Pass Rails data to JavaScript
     window.builderData = {
         websiteId: <%= @website.id %>,
-        currentPageId: <%= @homePage.id %>,
-        components: <%= raw @components.map { |c| { id: c.id, name: c.name, editable_fields: c.editable_fields_array } }.to_json %>
+        currentPageId: <%= @currentPage.id %>,
+        components: <%= raw @components.map { |c| { id: c.id, name: c.name, editable_fields: c.respond_to?(:editable_fields_array) ? c.editable_fields_array : [] } }.to_json %>
     };
+
+    // Add page navigation info to console for debugging
+    console.log('Current page:', '<%= @currentPage.page_type %>', 'ID:', <%= @currentPage.id %>);
+    console.log('Available pages:', <%= raw @websitePages.map { |p| { id: p.id, name: p.page_type } }.to_json %>);
+    console.log('Components on this page:', window.builderData.components.length);
 </script>
 </body>
 </html>

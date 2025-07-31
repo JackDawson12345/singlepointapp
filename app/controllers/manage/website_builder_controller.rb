@@ -7,12 +7,24 @@ class Manage::WebsiteBuilderController < ApplicationController
   before_action :set_website
 
   def builder
-    @websitePages = @website.theme.theme_pages
-    @homePage = @websitePages.order(:component_order).first
+    @websitePages = @website.theme.theme_pages.order(:component_order)
 
+    # Get the current page (either from params or default to first page)
+    @currentPage = if params[:page_id].present?
+                     @websitePages.find(params[:page_id])
+                   else
+                     @websitePages.first
+                   end
+
+    # Get components for the CURRENT page (not just home page)
     @components = Component.joins(:theme_page_components)
-                           .where(theme_page_components: { theme_page_id: @homePage.id })
+                           .where(theme_page_components: { theme_page_id: @currentPage.id })
                            .order('theme_page_components.position')
+
+    Rails.logger.info "=== BUILDER PAGE LOAD ==="
+    Rails.logger.info "Current Page: #{@currentPage.page_type} (ID: #{@currentPage.id})"
+    Rails.logger.info "Components count: #{@components.count}"
+
     render layout: false
   end
 
