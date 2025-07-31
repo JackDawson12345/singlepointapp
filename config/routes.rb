@@ -19,11 +19,11 @@ Rails.application.routes.draw do
     post 'payments/create-intent', to: 'payments#create_payment_intent'
     post 'payments/confirm', to: 'payments#confirm_payment'
 
-    get "/website", to: 'dashboard#website', as: 'website'
     get "/website/create", to: 'dashboard#website_create', as: 'website_create'
     post "/website/create/save", to: 'dashboard#website_create_save', as: 'website_create_save'
-
     get "/website/settings", to: 'dashboard#website_settings', as: 'website_settings'
+
+    get "/website", to: "website_builder#builder", as: 'website_builder'
 
   end
 

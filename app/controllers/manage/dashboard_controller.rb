@@ -37,7 +37,7 @@ class Manage::DashboardController < ApplicationController
     @website = current_user.build_website(website_params)
 
     if @website.save
-      redirect_to manage_website_path, notice: 'Website was successfully created.'
+      redirect_to manage_dashboard_path, notice: 'Website was successfully created.'
     else
       @user = current_user
       flash.now[:alert] = 'There was an error creating your website.'

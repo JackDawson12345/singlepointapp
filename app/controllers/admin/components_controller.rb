@@ -56,6 +56,6 @@ class Admin::ComponentsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def component_params
-      params.expect(component: [ :name, :html_content, :css_content, :js_content, :editable_fields, :component_type, :template_patterns ])
+      params.expect(component: [ :name, :html_content, :css_content, :js_content, :editable_fields, :component_type, :template_patterns, :global ])
     end
 end

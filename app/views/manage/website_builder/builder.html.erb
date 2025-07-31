@@ -1,0 +1,150 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+
+<div class="min-h-screen bg-white">
+  <!-- Header -->
+  <div class="flex bg-white" style="height: 65px; border-bottom: 1px solid black">
+    <div style="width: 65px; height: 65px; border-right: 1px solid black">
+
+    </div>
+    <div class="flex" style="width: calc( 100% - 65px)">
+      <div class="w-1/3 pl-5 flex flex-col justify-center">
+        <div class="flex gap-2 items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="15" viewBox="0 0 18 15" fill="none">
+            <path d="M14.9784 6.5H14.8583L9.63369 2.22559L8.9999 1.70801L8.36709 2.22559L3.14248 6.5H3.02139L8.9999 1.32227L14.9784 6.5Z" stroke="black" stroke-width="2"/>
+            <line x1="3" y1="7" x2="3" y2="15" stroke="black" stroke-width="2"/>
+            <line x1="15" y1="7" x2="15" y2="15" stroke="black" stroke-width="2"/>
+            <line x1="4" y1="14" x2="14" y2="14" stroke="black" stroke-width="2"/>
+            <line x1="9" y1="15" x2="9" y2="9" stroke="black" stroke-width="2"/>
+          </svg>
+          <p>Home Page</p>
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="3" viewBox="0 0 13 3" fill="none">
+            <circle cx="1.5" cy="1.5" r="1.5" fill="black"/>
+            <circle cx="6.5" cy="1.5" r="1.5" fill="black"/>
+            <circle cx="11.5" cy="1.5" r="1.5" fill="black"/>
+          </svg>
+        </div>
+        <div>
+          <p>/<%= @current_page %></p>
+        </div>
+      </div>
+      <div class="w-1/3 flex items-center justify-center gap-3">
+        <!-- Desktop-->
+        <div class="flex items-center justify-center" style="width: 30px; height: 30px; background: #FAFAFA">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
+            <rect x="1" y="1" width="18" height="13" stroke="black" stroke-width="2"/>
+            <rect x="1" y="1" width="18" height="13" stroke="black" stroke-width="2"/>
+            <rect x="1" y="1" width="18" height="13" stroke="black" stroke-width="2"/>
+            <line x1="5" y1="18" x2="15" y2="18" stroke="black" stroke-width="2"/>
+            <line x1="10" y1="19" x2="10" y2="14" stroke="black" stroke-width="2"/>
+          </svg>
+        </div>
+        <!-- Tablet-->
+        <div class="flex items-center justify-center" style="width: 30px; height: 30px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="19" viewBox="0 0 16 19" fill="none">
+            <rect x="1" y="1" width="14" height="17" stroke="black" stroke-width="2"/>
+            <rect x="1" y="1" width="14" height="17" stroke="black" stroke-width="2"/>
+            <rect x="1" y="1" width="14" height="17" stroke="black" stroke-width="2"/>
+            <circle cx="8" cy="15" r="1" fill="black"/>
+          </svg>
+        </div>
+        <!-- Mobile-->
+        <div class="flex items-center justify-center" style="width: 30px; height: 30px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="19" viewBox="0 0 14 19" fill="none">
+            <rect x="1" y="1" width="12" height="17" stroke="black" stroke-width="2"/>
+            <rect x="1" y="1" width="12" height="17" stroke="black" stroke-width="2"/>
+            <rect x="1" y="1" width="12" height="17" stroke="black" stroke-width="2"/>
+            <circle cx="7" cy="15" r="1" fill="black"/>
+          </svg>
+        </div>
+      </div>
+      <div class="w-1/3 flex items-center justify-end">
+
+
+      </div>
+    </div>
+  </div>
+  <!--  Content-->
+  <div class="flex w-full relative">
+    <!--  Sidebar Section-->
+    <div class="min-h-screen left-0 top-0 flex flex-col items-center gap-5 pt-5" style="width: 65px; border-right: 1px solid black">
+      <div class="sidebar-pages-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="25.5" height="30" viewBox="0 0 17 20" fill="none">
+          <rect x="1" y="5" width="11" height="14" stroke="black" stroke-width="2"/>
+          <rect x="1" y="5" width="11" height="14" stroke="black" stroke-width="2"/>
+          <rect x="1" y="5" width="11" height="14" stroke="black" stroke-width="2"/>
+          <rect x="1" y="5" width="11" height="14" stroke="black" stroke-width="2"/>
+          <path d="M16 1V15H12.5V5H5V1H16Z" stroke="black" stroke-width="2"/>
+          <path d="M16 1V15H12.5V5H5V1H16Z" stroke="black" stroke-width="2"/>
+          <path d="M16 1V15H12.5V5H5V1H16Z" stroke="black" stroke-width="2"/>
+          <path d="M16 1V15H12.5V5H5V1H16Z" stroke="black" stroke-width="2"/>
+        </svg>
+      </div>
+      <div style="width: 31px; height: 1px; background: black"></div>
+      <div class="sidebar-components-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="31.5" height="34.5" viewBox="0 0 21 23" fill="none">
+          <path d="M18.126 6L10.5 10.8164L2.87305 6L10.5 1.18262L18.126 6Z" stroke="black" stroke-width="2"/>
+          <path d="M18.126 6L10.5 10.8164L2.87305 6L10.5 1.18262L18.126 6Z" stroke="black" stroke-width="2"/>
+          <path d="M18.126 6L10.5 10.8164L2.87305 6L10.5 1.18262L18.126 6Z" stroke="black" stroke-width="2"/>
+          <path d="M18.126 6L10.5 10.8164L2.87305 6L10.5 1.18262L18.126 6Z" stroke="black" stroke-width="2"/>
+          <path d="M19.5 10L10.5 16L1.5 10" stroke="black" stroke-width="2"/>
+          <path d="M19.5 10L10.5 16L1.5 10" stroke="black" stroke-width="2"/>
+          <path d="M19.5 10L10.5 16L1.5 10" stroke="black" stroke-width="2"/>
+          <path d="M19.5 10L10.5 16L1.5 10" stroke="black" stroke-width="2"/>
+          <path d="M19.5 15L10.5 21L1.5 15" stroke="black" stroke-width="2"/>
+          <path d="M19.5 15L10.5 21L1.5 15" stroke="black" stroke-width="2"/>
+          <path d="M19.5 15L10.5 21L1.5 15" stroke="black" stroke-width="2"/>
+          <path d="M19.5 15L10.5 21L1.5 15" stroke="black" stroke-width="2"/>
+        </svg>
+      </div>
+      <div style="width: 31px; height: 1px; background: black"></div>
+      <div class="sidebar-colour-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="27.5" height="25.5" viewBox="0 0 15 17" fill="none">
+          <path d="M7.5 1C7.49908 1 7.50877 1.00026 7.53027 1.00391C7.55168 1.00755 7.5824 1.01425 7.62207 1.02637C7.70301 1.05113 7.80925 1.09386 7.94043 1.16113C8.20524 1.29696 8.5279 1.50997 8.89258 1.80078C9.62089 2.38162 10.4452 3.21406 11.2217 4.17773C11.9973 5.1404 12.7032 6.20744 13.2109 7.24609C13.7257 8.29918 14 9.24903 14 10C14 13.2498 11.156 16 7.5 16C3.84405 16 1 13.2498 1 10C1 9.24903 1.2743 8.29918 1.78906 7.24609C2.2968 6.20744 3.00267 5.1404 3.77832 4.17773C4.5548 3.21406 5.37911 2.38162 6.10742 1.80078C6.4721 1.50997 6.79476 1.29696 7.05957 1.16113C7.19075 1.09386 7.29699 1.05113 7.37793 1.02637C7.4176 1.01425 7.44832 1.00755 7.46973 1.00391C7.49123 1.00026 7.50092 1 7.5 1Z" stroke="black" stroke-width="2"/>
+        </svg>
+      </div>
+      <div style="width: 31px; height: 1px; background: black"></div>
+      <div class="sidebar-images-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="31.5" height="27" viewBox="0 0 21 18" fill="none">
+          <rect x="1" y="1" width="19" height="16" stroke="black" stroke-width="2"/>
+          <line x1="2.32733" y1="16.2601" x2="13.3273" y2="6.26006" stroke="black" stroke-width="2"/>
+          <line x1="20.2929" y1="14.7071" x2="12.2929" y2="6.70711" stroke="black" stroke-width="2"/>
+          <circle cx="6" cy="6" r="2" fill="black"/>
+        </svg>
+      </div>
+
+    </div>
+
+    <!--  Preview Section-->
+    <div class="min-h-screen transition-all duration-300 edit-preview-section" style="width: calc( 100% - 65px)">
+      <div class="flex-1 w-full">
+        <div class="bg-white">
+          <div class="">
+            <style>
+              <% @components.each do |component| %>
+              <% if component.css_content.present? %>
+              <%= raw component.css_content %>
+              <% end %>
+              <% end %>
+            </style>
+            <!-- Render Components -->
+            <% @components.each do |component| %>
+              <div class="component-wrapper" data-component-name="<%= component.name %>" data-component-type="<%= component.component_type %>">
+                <%= raw component.html_content %>
+              </div>
+            <% end %>
+
+            <!-- Inject JavaScript from components -->
+            <script>
+                <% @components.each do |component| %>
+                <% if component.js_content.present? %>
+                <%= raw component.js_content %>
+                <% end %>
+                <% end %>
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

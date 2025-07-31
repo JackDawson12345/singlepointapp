@@ -1,2 +1,28 @@
-<p class="notice"><%= notice %></p>
-<p class="alert"><%= alert %></p>
+<% if notice.present? %>
+  <p class="flash-message notice fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-lg z-50 max-w-sm transition-opacity duration-500 cursor-pointer" onclick="dismissFlash(this)">
+    <%= notice %>
+    <span class="ml-2 text-green-500 hover:text-green-700">&times;</span>
+  </p>
+<% end %>
+
+<% if alert.present? %>
+  <p class="flash-message alert fixed top-20 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-lg z-50 max-w-sm transition-opacity duration-500 cursor-pointer" onclick="dismissFlash(this)">
+    <%= alert %>
+    <span class="ml-2 text-red-500 hover:text-red-700">&times;</span>
+  </p>
+<% end %>
+
+<script>
+    function dismissFlash(element) {
+        element.style.opacity = '0';
+        setTimeout(() => element.remove(), 500);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const flashMessages = document.querySelectorAll('.flash-message');
+
+        flashMessages.forEach(message => {
+            setTimeout(() => dismissFlash(message), 3000);
+        });
+    });
+</script>
