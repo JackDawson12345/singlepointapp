@@ -1,150 +1,140 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+<!-- app/views/manage/website_builder/builder.html.erb -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Builder - <%= @website.name %></title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
 
-<div class="min-h-screen bg-white">
-  <!-- Header -->
-  <div class="flex bg-white" style="height: 65px; border-bottom: 1px solid black">
-    <div style="width: 65px; height: 65px; border-right: 1px solid black">
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "website_editor", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+  <%= javascript_include_tag "website_editor", "data-turbo-track": "reload" %>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
 
+<body class="website-builder-container">
+<!-- Builder Header -->
+<div class="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-30 h-16">
+  <div class="flex items-center justify-between h-full px-4">
+    <div class="flex items-center space-x-4">
+      <h1 class="text-xl font-semibold text-gray-900">Website Builder</h1>
+      <span class="text-sm text-gray-500">Editing: <%= @website.name %></span>
     </div>
-    <div class="flex" style="width: calc( 100% - 65px)">
-      <div class="w-1/3 pl-5 flex flex-col justify-center">
-        <div class="flex gap-2 items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="15" viewBox="0 0 18 15" fill="none">
-            <path d="M14.9784 6.5H14.8583L9.63369 2.22559L8.9999 1.70801L8.36709 2.22559L3.14248 6.5H3.02139L8.9999 1.32227L14.9784 6.5Z" stroke="black" stroke-width="2"/>
-            <line x1="3" y1="7" x2="3" y2="15" stroke="black" stroke-width="2"/>
-            <line x1="15" y1="7" x2="15" y2="15" stroke="black" stroke-width="2"/>
-            <line x1="4" y1="14" x2="14" y2="14" stroke="black" stroke-width="2"/>
-            <line x1="9" y1="15" x2="9" y2="9" stroke="black" stroke-width="2"/>
-          </svg>
-          <p>Home Page</p>
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="3" viewBox="0 0 13 3" fill="none">
-            <circle cx="1.5" cy="1.5" r="1.5" fill="black"/>
-            <circle cx="6.5" cy="1.5" r="1.5" fill="black"/>
-            <circle cx="11.5" cy="1.5" r="1.5" fill="black"/>
-          </svg>
-        </div>
-        <div>
-          <p>/<%= @current_page %></p>
-        </div>
-      </div>
-      <div class="w-1/3 flex items-center justify-center gap-3">
-        <!-- Desktop-->
-        <div class="flex items-center justify-center" style="width: 30px; height: 30px; background: #FAFAFA">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
-            <rect x="1" y="1" width="18" height="13" stroke="black" stroke-width="2"/>
-            <rect x="1" y="1" width="18" height="13" stroke="black" stroke-width="2"/>
-            <rect x="1" y="1" width="18" height="13" stroke="black" stroke-width="2"/>
-            <line x1="5" y1="18" x2="15" y2="18" stroke="black" stroke-width="2"/>
-            <line x1="10" y1="19" x2="10" y2="14" stroke="black" stroke-width="2"/>
-          </svg>
-        </div>
-        <!-- Tablet-->
-        <div class="flex items-center justify-center" style="width: 30px; height: 30px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="19" viewBox="0 0 16 19" fill="none">
-            <rect x="1" y="1" width="14" height="17" stroke="black" stroke-width="2"/>
-            <rect x="1" y="1" width="14" height="17" stroke="black" stroke-width="2"/>
-            <rect x="1" y="1" width="14" height="17" stroke="black" stroke-width="2"/>
-            <circle cx="8" cy="15" r="1" fill="black"/>
-          </svg>
-        </div>
-        <!-- Mobile-->
-        <div class="flex items-center justify-center" style="width: 30px; height: 30px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="19" viewBox="0 0 14 19" fill="none">
-            <rect x="1" y="1" width="12" height="17" stroke="black" stroke-width="2"/>
-            <rect x="1" y="1" width="12" height="17" stroke="black" stroke-width="2"/>
-            <rect x="1" y="1" width="12" height="17" stroke="black" stroke-width="2"/>
-            <circle cx="7" cy="15" r="1" fill="black"/>
-          </svg>
-        </div>
-      </div>
-      <div class="w-1/3 flex items-center justify-end">
 
-
-      </div>
+    <div class="flex items-center space-x-3">
+      <%= link_to "Settings", manage_website_settings_path,
+                  class: "px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50" %>
+      <%= link_to "Preview", manage_preview_website_path,
+                  target: "_blank",
+                  class: "px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50" %>
+      <%= link_to "Dashboard", manage_dashboard_path,
+                  class: "px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700" %>
     </div>
   </div>
-  <!--  Content-->
-  <div class="flex w-full relative">
-    <!--  Sidebar Section-->
-    <div class="min-h-screen left-0 top-0 flex flex-col items-center gap-5 pt-5" style="width: 65px; border-right: 1px solid black">
-      <div class="sidebar-pages-toggle">
-        <svg xmlns="http://www.w3.org/2000/svg" width="25.5" height="30" viewBox="0 0 17 20" fill="none">
-          <rect x="1" y="5" width="11" height="14" stroke="black" stroke-width="2"/>
-          <rect x="1" y="5" width="11" height="14" stroke="black" stroke-width="2"/>
-          <rect x="1" y="5" width="11" height="14" stroke="black" stroke-width="2"/>
-          <rect x="1" y="5" width="11" height="14" stroke="black" stroke-width="2"/>
-          <path d="M16 1V15H12.5V5H5V1H16Z" stroke="black" stroke-width="2"/>
-          <path d="M16 1V15H12.5V5H5V1H16Z" stroke="black" stroke-width="2"/>
-          <path d="M16 1V15H12.5V5H5V1H16Z" stroke="black" stroke-width="2"/>
-          <path d="M16 1V15H12.5V5H5V1H16Z" stroke="black" stroke-width="2"/>
-        </svg>
-      </div>
-      <div style="width: 31px; height: 1px; background: black"></div>
-      <div class="sidebar-components-toggle">
-        <svg xmlns="http://www.w3.org/2000/svg" width="31.5" height="34.5" viewBox="0 0 21 23" fill="none">
-          <path d="M18.126 6L10.5 10.8164L2.87305 6L10.5 1.18262L18.126 6Z" stroke="black" stroke-width="2"/>
-          <path d="M18.126 6L10.5 10.8164L2.87305 6L10.5 1.18262L18.126 6Z" stroke="black" stroke-width="2"/>
-          <path d="M18.126 6L10.5 10.8164L2.87305 6L10.5 1.18262L18.126 6Z" stroke="black" stroke-width="2"/>
-          <path d="M18.126 6L10.5 10.8164L2.87305 6L10.5 1.18262L18.126 6Z" stroke="black" stroke-width="2"/>
-          <path d="M19.5 10L10.5 16L1.5 10" stroke="black" stroke-width="2"/>
-          <path d="M19.5 10L10.5 16L1.5 10" stroke="black" stroke-width="2"/>
-          <path d="M19.5 10L10.5 16L1.5 10" stroke="black" stroke-width="2"/>
-          <path d="M19.5 10L10.5 16L1.5 10" stroke="black" stroke-width="2"/>
-          <path d="M19.5 15L10.5 21L1.5 15" stroke="black" stroke-width="2"/>
-          <path d="M19.5 15L10.5 21L1.5 15" stroke="black" stroke-width="2"/>
-          <path d="M19.5 15L10.5 21L1.5 15" stroke="black" stroke-width="2"/>
-          <path d="M19.5 15L10.5 21L1.5 15" stroke="black" stroke-width="2"/>
-        </svg>
-      </div>
-      <div style="width: 31px; height: 1px; background: black"></div>
-      <div class="sidebar-colour-toggle">
-        <svg xmlns="http://www.w3.org/2000/svg" width="27.5" height="25.5" viewBox="0 0 15 17" fill="none">
-          <path d="M7.5 1C7.49908 1 7.50877 1.00026 7.53027 1.00391C7.55168 1.00755 7.5824 1.01425 7.62207 1.02637C7.70301 1.05113 7.80925 1.09386 7.94043 1.16113C8.20524 1.29696 8.5279 1.50997 8.89258 1.80078C9.62089 2.38162 10.4452 3.21406 11.2217 4.17773C11.9973 5.1404 12.7032 6.20744 13.2109 7.24609C13.7257 8.29918 14 9.24903 14 10C14 13.2498 11.156 16 7.5 16C3.84405 16 1 13.2498 1 10C1 9.24903 1.2743 8.29918 1.78906 7.24609C2.2968 6.20744 3.00267 5.1404 3.77832 4.17773C4.5548 3.21406 5.37911 2.38162 6.10742 1.80078C6.4721 1.50997 6.79476 1.29696 7.05957 1.16113C7.19075 1.09386 7.29699 1.05113 7.37793 1.02637C7.4176 1.01425 7.44832 1.00755 7.46973 1.00391C7.49123 1.00026 7.50092 1 7.5 1Z" stroke="black" stroke-width="2"/>
-        </svg>
-      </div>
-      <div style="width: 31px; height: 1px; background: black"></div>
-      <div class="sidebar-images-toggle">
-        <svg xmlns="http://www.w3.org/2000/svg" width="31.5" height="27" viewBox="0 0 21 18" fill="none">
-          <rect x="1" y="1" width="19" height="16" stroke="black" stroke-width="2"/>
-          <line x1="2.32733" y1="16.2601" x2="13.3273" y2="6.26006" stroke="black" stroke-width="2"/>
-          <line x1="20.2929" y1="14.7071" x2="12.2929" y2="6.70711" stroke="black" stroke-width="2"/>
-          <circle cx="6" cy="6" r="2" fill="black"/>
-        </svg>
-      </div>
+</div>
 
+<!-- Builder Sidebar -->
+<div class="builder-sidebar pt-16">
+  <div class="p-4">
+    <h2 class="text-lg font-medium text-gray-900 mb-4">Pages</h2>
+
+    <div class="space-y-2">
+      <% @websitePages.order(:component_order).each do |page| %>
+        <div class="page-item <%= 'active' if page == @homePage %>" data-page-id="<%= page.id %>">
+          <button class="w-full text-left px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md <%= 'bg-blue-50 text-blue-700' if page == @homePage %>">
+            <%= page.page_type %>
+          </button>
+        </div>
+      <% end %>
     </div>
 
-    <!--  Preview Section-->
-    <div class="min-h-screen transition-all duration-300 edit-preview-section" style="width: calc( 100% - 65px)">
-      <div class="flex-1 w-full">
-        <div class="bg-white">
-          <div class="">
-            <style>
-              <% @components.each do |component| %>
-              <% if component.css_content.present? %>
-              <%= raw component.css_content %>
-              <% end %>
-              <% end %>
-            </style>
-            <!-- Render Components -->
-            <% @components.each do |component| %>
-              <div class="component-wrapper" data-component-name="<%= component.name %>" data-component-type="<%= component.component_type %>">
-                <%= raw component.html_content %>
-              </div>
-            <% end %>
+    <!-- Component Library (for future expansion) -->
+    <div class="mt-8">
+      <h3 class="text-md font-medium text-gray-900 mb-3">Components</h3>
+      <div class="text-sm text-gray-500">
+        <p>Click on any component in the preview to edit it.</p>
+      </div>
+    </div>
 
-            <!-- Inject JavaScript from components -->
-            <script>
-                <% @components.each do |component| %>
-                <% if component.js_content.present? %>
-                <%= raw component.js_content %>
-                <% end %>
-                <% end %>
-            </script>
-          </div>
-        </div>
+    <!-- Website Stats -->
+    <div class="mt-8 p-3 bg-gray-50 rounded-md">
+      <h4 class="text-sm font-medium text-gray-900 mb-2">Website Stats</h4>
+      <div class="space-y-1 text-xs text-gray-600">
+        <div>Pages: <%= @websitePages.count %></div>
+        <div>Components: <%= @components.count %></div>
+        <div>Customizations: <%= @website.website_customizations.count %></div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Main Builder Content -->
+<div class="builder-content pt-16">
+  <div class="page-preview">
+    <!-- Page Header -->
+    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-medium text-gray-900">
+          <%= @homePage.page_type %> Page
+        </h2>
+        <div class="text-sm text-gray-500">
+          <%= pluralize(@components.count, 'component') %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content">
+      <% @components.each do |component| %>
+        <div class="component-wrapper">
+          <%= render_component_for_website(component, @homePage, @website) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <% if @components.empty? %>
+    <div class="text-center py-12">
+      <div class="text-gray-400 mb-4">
+        <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No Components Found</h3>
+      <p class="text-gray-500">This page doesn't have any components yet. Contact your administrator to add components to this theme.</p>
+    </div>
+  <% end %>
+</div>
+
+<!-- Mobile Notice -->
+<div class="lg:hidden fixed bottom-4 left-4 right-4 bg-blue-50 border border-blue-200 rounded-md p-4 z-40">
+  <div class="flex">
+    <div class="flex-shrink-0">
+      <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+      </svg>
+    </div>
+    <div class="ml-3">
+      <p class="text-sm text-blue-800">
+        For the best editing experience, please use a desktop or tablet device.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Include editor JavaScript -->
+<script>
+    // Pass Rails data to JavaScript
+    window.builderData = {
+        websiteId: <%= @website.id %>,
+        currentPageId: <%= @homePage.id %>,
+        components: <%= raw @components.map { |c| { id: c.id, name: c.name, editable_fields: c.editable_fields_array } }.to_json %>
+    };
+</script>
+</body>
+</html>

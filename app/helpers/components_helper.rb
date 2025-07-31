@@ -1,109 +1,85 @@
 # app/helpers/components_helper.rb
 module ComponentsHelper
-  def process_component_template(component, theme = nil, current_page = nil)
-    return component.html_content if component.html_content.blank?
 
-    html = component.html_content.dup
+  # Main method to render component (simplified version)
+  def render_component_for_website(component, theme_page, website = nil)
+    # For now, just render the component HTML with edit wrapper if in builder mode
+    html = component.html_content || ""
 
-    # Process template patterns if they exist
-    if component.template_patterns.present?
-      html = process_template_patterns(html, component.template_patterns, theme, current_page)
+    # Apply basic placeholder replacements
+    html = process_basic_placeholders(html, component)
+
+    # Wrap component for editing if in builder mode
+    if params[:action] == 'builder' && website
+      html = wrap_component_for_editing(html, component, theme_page)
     end
 
-    # Process simple placeholders (like {{logo}})
-    html = process_simple_placeholders(html, component, theme)
+    html.html_safe
+  end
+
+  # Process basic placeholders in component HTML
+  def process_basic_placeholders(html, component)
+    # Replace common placeholders with default values
+    replacements = {
+      '{{title}}' => 'Sample Title',
+      '{{subtitle}}' => 'Sample Subtitle',
+      '{{content}}' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      '{{text}}' => 'Sample text content',
+      '{{button_text}}' => 'Click Here',
+      '{{image_url}}' => 'https://via.placeholder.com/300x200',
+      '{{background_color}}' => '#3b82f6',
+      '{{color}}' => '#374151',
+      '{{logo}}' => 'Logo',
+      '{{link_url}}' => '#'
+    }
+
+    replacements.each do |placeholder, default_value|
+      html = html.gsub(placeholder, default_value)
+    end
 
     html
   end
 
-  private
-
-  def process_template_patterns(html, template_patterns_json, theme, current_page = nil)
-    begin
-      # Parse the template patterns JSON
-      patterns = JSON.parse(template_patterns_json)
-
-      patterns.each do |placeholder, pattern_config|
-        case placeholder
-        when 'nav_items'
-          html = process_nav_items(html, pattern_config, theme, current_page)
-          # Add more pattern types here as needed
-        end
-      end
-    rescue JSON::ParserError => e
-      Rails.logger.error "Failed to parse template patterns: #{e.message}"
-    end
-
-    html
+  # Wrap component with editing controls
+  def wrap_component_for_editing(html, component, theme_page)
+    <<~HTML
+      <div class="editable-component" 
+           data-component-id="#{component.id}" 
+           data-theme-page-id="#{theme_page.id}"
+           data-component-name="#{component.name}">
+        <div class="component-overlay">
+          <button class="edit-component-btn" 
+                  data-component-id="#{component.id}"
+                  data-theme-page-id="#{theme_page.id}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+            Edit #{component.name}
+          </button>
+        </div>
+        <div class="component-content">
+          #{html}
+        </div>
+      </div>
+    HTML
   end
 
-  def process_nav_items(html, pattern_config, theme, current_page = nil)
-    return html unless theme&.theme_pages&.any?
-
-    # Get the template for individual nav items
-    nav_item_template = extract_nav_item_template(pattern_config)
-
-    # Generate nav items for each theme page
-    nav_items_html = theme.theme_pages.order(:component_order).map do |theme_page|
-      # Create the preview URL for each page
-      preview_url = Rails.application.routes.url_helpers.admin_preview_theme_page_path(
-        theme_id: theme.id,
-        id: theme_page.id
-      )
-
-      # Replace placeholders in the template
-      nav_item_html = nav_item_template.gsub('{{nav_item}}', theme_page.page_type)
-
-      # Update the href attribute to point to the preview page
-      nav_item_html = nav_item_html.gsub('href="#"', "href=\"#{preview_url}\"")
-
-      # Highlight current page by adding different styling
-      if current_page && current_page.id == theme_page.id
-        nav_item_html = nav_item_html.gsub(
-          'text-gray-900 hover:text-blue-600',
-          'text-blue-600 font-semibold bg-blue-50'
-        )
-      end
-
-      nav_item_html
-    end.join("\n                        ") # Maintain indentation
-
-    # Replace the placeholder with generated nav items
-    html.gsub('{{nav_items}}', nav_items_html)
-  end
-
-  def extract_nav_item_template(pattern_config)
-    # Handle different pattern config formats
-    case pattern_config
-    when String
-      # If it's a string, it's the template
-      pattern_config
-    when Hash
-      # If it's a hash, look for template key or use the whole thing
-      pattern_config['template'] || pattern_config.to_s
+  # Helper method for getting component field types for JavaScript
+  def component_field_types_json(component)
+    if component.respond_to?(:field_types_hash)
+      component.field_types_hash.to_json
     else
-      # Default fallback
-      '<a href="#" class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-300">{{nav_item}}</a>'
+      '{}'.to_json
     end
   end
 
-  def process_simple_placeholders(html, component, theme)
-    # Handle simple placeholders like {{logo}}
-    # You can expand this based on your editable_fields
-    if component.editable_fields.present?
-      editable_fields = component.editable_fields.split(',').map(&:strip)
-
-      editable_fields.each do |field|
-        case field.downcase
-        when 'logo'
-          # Replace with default logo text or use theme-specific logo if available
-          logo_text = theme&.name || "Logo"
-          html = html.gsub("{{#{field}}}", logo_text)
-          # Add more field types as needed
-        end
-      end
+  # Helper method to get customizations as JSON
+  def component_customizations_json(component, theme_page, website)
+    if defined?(WebsiteCustomization) && website
+      customizations = WebsiteCustomization.for_component(website.id, component.id, theme_page.id)
+      customizations.to_json
+    else
+      '{}'.to_json
     end
-
-    html
   end
 end

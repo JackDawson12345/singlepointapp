@@ -1,0 +1,60 @@
+<!-- app/views/manage/dashboard/preview_website.html.erb -->
+
+<div class="website-preview-page">
+  <!-- Render all components for the current page -->
+  <% @components.each do |component| %>
+    <div class="website-component" data-component-id="<%= component.id %>">
+      <%= render_component_for_website(component, @current_page, @website) %>
+    </div>
+  <% end %>
+
+  <!-- Empty state if no components -->
+  <% if @components.empty? %>
+    <div class="empty-page-state" style="text-align: center; padding: 4rem 2rem; color: #6b7280;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+      <h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: #374151;">This page is empty</h2>
+      <p>No components have been added to the "<%= @current_page.page_type %>" page yet.</p>
+      <div style="margin-top: 2rem;">
+        <%= link_to "Go to Editor", manage_website_builder_path,
+                    style: "display: inline-block; padding: 0.75rem 1.5rem; background: #3b82f6; color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 500;" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<!-- Add some basic responsive styles -->
+<style>
+    .website-preview-page {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .website-component {
+        width: 100%;
+    }
+
+    /* Ensure images are responsive */
+    .website-component img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Basic responsive typography */
+    @media (max-width: 768px) {
+        .website-component {
+            font-size: 0.9rem;
+        }
+
+        .website-component h1 {
+            font-size: 1.8rem;
+        }
+
+        .website-component h2 {
+            font-size: 1.5rem;
+        }
+
+        .website-component h3 {
+            font-size: 1.3rem;
+        }
+    }
+</style>

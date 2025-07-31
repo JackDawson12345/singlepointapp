@@ -1,0 +1,162 @@
+<!-- app/views/manage/website_builder/_component_editor.html.erb -->
+<div class="component-editor-modal" id="component-editor-<%= component.id %>">
+  <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+      <div class="mt-3">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-medium text-gray-900">
+            Edit <%= component.name %>
+          </h3>
+          <button type="button" class="text-gray-400 hover:text-gray-600 close-editor">
+            <span class="sr-only">Close</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Editor Form -->
+        <div class="space-y-4">
+          <%= form_tag manage_update_component_path(component_id: component.id, theme_page_id: theme_page.id),
+                       remote: true,
+                       class: "component-editor-form",
+                       id: "form-component-#{component.id}" do %>
+
+            <% editable_fields = component.respond_to?(:editable_fields_array) ? component.editable_fields_array : [] %>
+            <% field_types = component.respond_to?(:field_types_hash) ? component.field_types_hash : {} %>
+
+            <% if editable_fields.empty? %>
+              <!-- Fallback: Show common fields if no editable_fields defined -->
+              <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-4">
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                  <div class="ml-3">
+                    <p class="text-sm text-yellow-800">
+                      This component doesn't have editable fields configured yet. Contact your administrator to set up customizable fields.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Show some basic fields anyway -->
+              <div class="form-group">
+                <%= label_tag :title, "Title", class: "block text-sm font-medium text-gray-700" %>
+                <%= text_field_tag :title, customizations['title'] || 'Sample Title',
+                                   class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
+                                   data: { field: 'title' } %>
+              </div>
+
+              <div class="form-group">
+                <%= label_tag :content, "Content", class: "block text-sm font-medium text-gray-700" %>
+                <%= text_area_tag :content, customizations['content'] || 'Sample content text',
+                                  rows: 3,
+                                  class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
+                                  data: { field: 'content' } %>
+              </div>
+
+            <% else %>
+              <!-- Show configured editable fields -->
+              <% editable_fields.each do |field_name| %>
+                <div class="form-group">
+                  <%= label_tag field_name, field_name.humanize, class: "block text-sm font-medium text-gray-700" %>
+
+                  <% field_type = field_types[field_name] || 'text' %>
+                  <% current_value = customizations[field_name] || get_default_field_value(field_name) %>
+
+                  <% case field_type %>
+                  <% when 'text' %>
+                    <%= text_field_tag field_name, current_value,
+                                       class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
+                                       data: { field: field_name } %>
+
+                  <% when 'textarea' %>
+                    <%= text_area_tag field_name, current_value,
+                                      rows: 3,
+                                      class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
+                                      data: { field: field_name } %>
+
+                  <% when 'color' %>
+                    <div class="mt-1 flex items-center space-x-2">
+                      <%= color_field_tag field_name, current_value,
+                                          class: "h-10 w-20 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500",
+                                          data: { field: field_name } %>
+                      <%= text_field_tag "#{field_name}_hex", current_value,
+                                         class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
+                                         placeholder: "#000000",
+                                         data: { field: field_name, type: 'hex' } %>
+                    </div>
+
+                  <% when 'image' %>
+                    <div class="mt-1">
+                      <%= url_field_tag field_name, current_value,
+                                        class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
+                                        placeholder: "https://example.com/image.jpg",
+                                        data: { field: field_name } %>
+                      <% if current_value.present? %>
+                        <div class="mt-2">
+                          <img src="<%= current_value %>" alt="Preview" class="h-20 w-20 object-cover rounded-md border">
+                        </div>
+                      <% end %>
+                    </div>
+
+                  <% else %>
+                    <%= text_field_tag field_name, current_value,
+                                       class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm",
+                                       data: { field: field_name } %>
+                  <% end %>
+                </div>
+              <% end %>
+            <% end %>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-between pt-4">
+              <button type="button"
+                      class="reset-component-btn text-red-600 hover:text-red-800 text-sm"
+                      data-component-id="<%= component.id %>"
+                      data-theme-page-id="<%= theme_page.id %>">
+                Reset to Default
+              </button>
+
+              <div class="space-x-2">
+                <button type="button" class="preview-btn px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                  Preview
+                </button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700">
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%
+  def get_default_field_value(field_name)
+    case field_name.downcase
+    when 'title'
+      'Default Title'
+    when 'subtitle'
+      'Default Subtitle'
+    when 'text', 'content'
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    when 'button_text'
+      'Click Here'
+    when 'image_url'
+      'https://via.placeholder.com/300x200'
+    when 'background_color', 'color'
+      '#3b82f6'
+    when 'logo'
+      'Logo'
+    else
+      "Default #{field_name.humanize}"
+    end
+  end
+%>

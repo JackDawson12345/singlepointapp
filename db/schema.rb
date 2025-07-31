@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_30_154501) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_31_084917) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,8 +40,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_30_154501) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "component_type"
-    t.text "template_patterns", default: "{{}}"
+    t.text "template_patterns", default: "{}"
     t.boolean "global"
+    t.text "field_types", default: "{}"
   end
 
   create_table "theme_page_components", force: :cascade do |t|
@@ -85,6 +86,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_30_154501) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "website_customizations", force: :cascade do |t|
+    t.bigint "website_id", null: false
+    t.bigint "component_id", null: false
+    t.bigint "theme_page_id", null: false
+    t.string "field_name", null: false
+    t.text "field_value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["component_id"], name: "index_website_customizations_on_component_id"
+    t.index ["theme_page_id"], name: "index_website_customizations_on_theme_page_id"
+    t.index ["website_id", "component_id", "theme_page_id", "field_name"], name: "unique_website_component_field", unique: true
+    t.index ["website_id", "component_id", "theme_page_id"], name: "index_website_customizations_on_website_component_page"
+    t.index ["website_id", "field_name"], name: "index_website_customizations_on_website_id_and_field_name"
+    t.index ["website_id"], name: "index_website_customizations_on_website_id"
+  end
+
   create_table "websites", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "theme_id", null: false
@@ -100,6 +117,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_30_154501) do
   add_foreign_key "theme_page_components", "components"
   add_foreign_key "theme_page_components", "theme_pages"
   add_foreign_key "theme_pages", "themes"
+  add_foreign_key "website_customizations", "components"
+  add_foreign_key "website_customizations", "theme_pages"
+  add_foreign_key "website_customizations", "websites"
   add_foreign_key "websites", "themes"
   add_foreign_key "websites", "users"
 end
